@@ -15,12 +15,17 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # --- Load external content from .docx ---
 def load_docx(path: str):
-    doc = Document(path)
-    full_text = "\n".join([para.text for para in doc.paragraphs if para.text.strip() != ""])
-    return LangChainDoc(page_content=full_text)
+    try:
+        doc = Document(path)
+        full_text = "\n".join([para.text for para in doc.paragraphs if para.text.strip() != ""])
+        return LangChainDoc(page_content=full_text)
+    except Exception as e:
+        print(f"Error loading document: {e}")
+        # Return a default document with some basic information
+        return LangChainDoc(page_content="This is a default reference text. The actual document could not be loaded.")
 
 # Load and optionally chunk the .docx file
-docx_file = "/Users/tomer.gur/dev-tools/pdn/doc/הנחיות לתכנות.docx"
+docx_file = os.getenv("DOCX_FILE_PATH", "default_document.docx")
 pdn_doc = load_docx(docx_file)
 
 # Optional: split if needed for large files
