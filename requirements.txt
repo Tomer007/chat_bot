@@ -1,7 +1,7 @@
 flask==3.0.2
 gunicorn==21.2.0
 python-dotenv==1.0.1
-openai==0.28.1
+openai>=1.0.0
 flask-cors==4.0.0
 langchain==0.0.350
 faiss-cpu==1.7.4
