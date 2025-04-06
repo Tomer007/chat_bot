@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
@@ -6,12 +6,22 @@ import json
 from docx import Document
 from langchain.schema import Document as LangChainDoc
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from functools import wraps
 
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "supersecret")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Login required decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_email' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # --- Load external content from .docx ---
 def load_docx(path: str):
@@ -26,6 +36,7 @@ def load_docx(path: str):
 
 # Load and optionally chunk the .docx file
 docx_file = os.getenv("DOCX_FILE_PATH", "default_document.docx")
+
 pdn_doc = load_docx(docx_file)
 
 # Optional: split if needed for large files
@@ -84,11 +95,32 @@ def generate_response(user_message):
 
     return bot_reply
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        
+        if password == "Tomer":
+            session['user_email'] = email
+            return redirect(url_for('index'))
+        else:
+            return render_template("login.html", error="סיסמה שגויה. אנא נסה שוב.")
+    
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.pop('user_email', None)
+    return redirect(url_for('login'))
+
 @app.route("/")
+@login_required
 def index():
     return render_template("index.html")
 
 @app.route("/chat", methods=["POST"])
+@login_required
 def chat():
     data = request.get_json()
     user_message = data.get("message", "")
@@ -100,6 +132,7 @@ def chat():
     return jsonify({"response": response})
 
 @app.route("/session-status", methods=["GET"])
+@login_required
 def session_status():
     session_id = get_session_id()
     return jsonify({
@@ -109,4 +142,4 @@ def session_status():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
