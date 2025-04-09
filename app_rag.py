@@ -1,16 +1,61 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
 import json
+import os
+from datetime import datetime, timedelta
+from functools import wraps
+
 from docx import Document
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask_cors import CORS
 from langchain.schema import Document as LangChainDoc
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from functools import wraps
+from openai import OpenAI
 
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "supersecret")
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=3)  # Set session timeout to 3 minutes
+CORS(app)
+
+# Load chatbot configuration
+import os
+import yaml
+
+
+def load_chatbot_config():
+    # Ensure the path is correct relative to your app file
+    config_path = os.path.join(os.path.dirname(__file__), 'config', 'chatbot_config.yaml')
+    print("Trying to load YAML from:", config_path)
+
+    with open(config_path, 'r', encoding='utf-8') as file:
+        config_data = yaml.safe_load(file)
+
+    chatbots = config_data.get("chatbots", {})
+
+
+    # Get the environment variable, defaulting to "default"
+    selected_chatbot = os.getenv("CHATBOT_NAME", "default").strip()
+
+    # If not found by key, try searching by the chatbot's "name" field
+    for key, config in chatbots.items():
+        if config.get("name") == selected_chatbot:
+            # Look up the configuration within the "chatbots" dictionary
+            chosen_config = config
+            break
+
+
+    print("chosen_config:", chosen_config)
+
+
+    if not chosen_config:
+        # Log a warning and fallback to default if the selected key isn't found
+        chosen_config = config_data.get("chatbots", {}).get("default", {})
+
+    return chosen_config
+
+
+# Example of calling the function:
+chatbot_config = load_chatbot_config()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -45,8 +90,11 @@ doc_chunks = splitter.split_documents([pdn_doc])
 # Take top 1–2 chunks if needed (can be improved with retrieval later)
 reference_text = "\n\n".join([chunk.page_content for chunk in doc_chunks[:2]])
 
-# Load base system prompt and inject .docx context
-with open("buddy_budge.txt", "r") as f:
+# Get the prompt file path from an environment variable
+prompt_file = os.getenv("BUDDY_PROMPT_FILE", "prompts/buddy_prompt.txt")
+
+# Read the prompt from the specified file
+with open(prompt_file, "r", encoding="utf-8") as f:
     base_prompt = f.read().strip()
 
 SYSTEM_PROMPT = f"""{base_prompt}
@@ -95,29 +143,42 @@ def generate_response(user_message):
 
     return bot_reply
 
+@app.before_request
+def before_request():
+    if 'user_email' in session:
+        # Check if session is expired
+        if 'last_activity' in session:
+            last_activity = datetime.fromisoformat(session['last_activity'])
+            if datetime.now() - last_activity > app.config['PERMANENT_SESSION_LIFETIME']:
+                session.clear()
+                return redirect(url_for('login'))
+        # Update last activity time
+        session['last_activity'] = datetime.now().isoformat()
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
         
-        if password == "Tomer":
+        if password == os.getenv('USER_PASSWORD'):
             session['user_email'] = email
+            session['last_activity'] = datetime.now().isoformat()
             return redirect(url_for('index'))
         else:
-            return render_template("login.html", error="סיסמה שגויה. אנא נסה שוב.")
+            return render_template("login.html", error="Invalid credentials", chatbot_config=chatbot_config)
     
-    return render_template("login.html")
+    return render_template("login.html", chatbot_config=chatbot_config)
 
 @app.route("/logout")
 def logout():
-    session.pop('user_email', None)
+    session.clear()
     return redirect(url_for('login'))
 
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    return render_template("index.html", chatbot_config=chatbot_config)
 
 @app.route("/chat", methods=["POST"])
 @login_required
@@ -140,6 +201,16 @@ def session_status():
         "has_history": session_id in conversation_history,
         "history_length": len(conversation_history.get(session_id, []))
     })
+
+@app.route('/check_session')
+def check_session():
+    if 'user_email' in session and 'last_activity' in session:
+        last_activity = datetime.fromisoformat(session['last_activity'])
+        if datetime.now() - last_activity > app.config['PERMANENT_SESSION_LIFETIME']:
+            session.clear()
+            return jsonify({'status': 'expired'})
+        return jsonify({'status': 'active'})
+    return jsonify({'status': 'expired'})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5001, debug=True)

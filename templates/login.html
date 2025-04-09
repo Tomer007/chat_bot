@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>התחברות - Buddy Budget</title>
+    <title>{{ chatbot_config.name }} - {{ chatbot_config.title }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -13,20 +13,21 @@
             --user-color: #007bff;
             --bot-bg: #e4e6eb;
             --transition: background-color 0.3s, color 0.3s;
+            --header-bg: #007bff;
+            --footer-bg: #fff;
+            --input-bg: #fff;
+            --input-border: #ccc;
         }
 
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #f0f0f0;
-            --user-color: #1e88e5;
-            --bot-bg: #2a2a2a;
-        }
-
-        [data-theme="solarized"] {
-            --bg-color: #fdf6e3;
-            --text-color: #657b83;
-            --user-color: #268bd2;
-            --bot-bg: #eee8d5;
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --user-color: #2196f3;
+            --bot-bg: #2d2d2d;
+            --header-bg: #121212;
+            --footer-bg: #121212;
+            --input-bg: #2d2d2d;
+            --input-border: #404040;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; transition: var(--transition); }
@@ -36,67 +37,53 @@
             background: var(--bg-color);
             color: var(--text-color);
             display: flex;
-            align-items: center;
             justify-content: center;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .login-header {
-            background: var(--user-color);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .login-header h2 {
-            font-size: 1.5em;
-            font-weight: 500;
+            align-items: center;
+            height: 100vh;
             margin: 0;
         }
 
-        .login-header p {
-            font-size: 1.1em;
-            margin: 10px 0 0;
-            opacity: 0.9;
+        .login-container {
+            background: var(--input-bg);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
         }
 
-        .login-form {
-            padding: 20px;
+        h1 {
+            color: var(--user-color);
+            margin-bottom: 20px;
         }
 
-        .form-control {
-            margin-bottom: 15px;
-            border-radius: 20px;
-            padding: 10px 15px;
-            border: 1px solid #ccc;
-            transition: border 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--user-color);
-            box-shadow: none;
-        }
-
-        .btn-primary {
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
-            border-radius: 20px;
-            background: var(--user-color);
-            border: none;
-            transition: background 0.3s, transform 0.2s;
+            margin: 10px 0;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
-        .btn-primary:hover {
+        button {
+            background: var(--user-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
             background: #0056b3;
-            transform: scale(1.02);
         }
 
         .error-message {
@@ -109,8 +96,11 @@
         .footer {
             text-align: center;
             padding: 15px;
-            background: #fff;
-            border-top: 1px solid #eee;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--input-border);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
 
         .footer a {
@@ -122,29 +112,32 @@
 </head>
 <body>
     <div class="login-container">
-        <div class="login-header">
-            <h2>התחברות למערכת</h2>
-            <p>מני - המאמן שלך להגדלת הכנסות ללא סיכון</p>
-        </div>
-        <div class="login-form">
-            <form method="POST" action="/login">
-                <div class="mb-3">
-                    <label for="email" class="form-label">כתובת אימייל</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">סיסמה</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">התחבר</button>
-                {% if error %}
-                <div class="error-message">{{ error }}</div>
-                {% endif %}
-            </form>
-        </div>
-        <div class="footer">
-            <a href="mailto:contact@oferlevy.co.il">contact@oferlevy.co.il</a>
-        </div>
+        <h1>{{ chatbot_config.name }}</h1>
+        <p>{{ chatbot_config.title }}</p>
+        <form method="POST">
+            <input type="email" name="email" placeholder="הכנס את כתובת האימייל שלך" required>
+            <input type="password" name="password" placeholder="הכנס את הסיסמה שלך" required>
+            <button type="submit">התחבר</button>
+        </form>
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
     </div>
+    <div class="footer">
+        <a href="mailto:{{ chatbot_config.contact_email }}">{{ chatbot_config.contact_email }}</a>
+    </div>
+
+    <script>
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
+    </script>
 </body>
 </html> 

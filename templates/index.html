@@ -9,26 +9,31 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    /* Default light mode variables */
     :root {
       --bg-color: #f1f1f1;
       --text-color: #333;
       --user-color: #007bff;
       --bot-bg: #e4e6eb;
       --transition: background-color 0.3s, color 0.3s;
+      --header-bg: #007bff;
+      --footer-bg: #fff;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --chat-input-bg: #eee;
     }
 
-    [data-theme="dark"] {
+    /* Dark mode variables that apply when the .dark-mode class is added */
+    .dark-mode {
       --bg-color: #121212;
-      --text-color: #f0f0f0;
+      --text-color: #e0e0e0;
       --user-color: #1e88e5;
-      --bot-bg: #2a2a2a;
-    }
-
-    [data-theme="solarized"] {
-      --bg-color: #fdf6e3;
-      --text-color: #657b83;
-      --user-color: #268bd2;
-      --bot-bg: #eee8d5;
+      --bot-bg: #333333;
+      --header-bg: #1a1a1a;
+      --footer-bg: #1a1a1a;
+      --input-bg: #1c1c1c;
+      --input-border: #444444;
+      --chat-input-bg: #333;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; transition: var(--transition); }
@@ -49,17 +54,21 @@
       position: relative;
     }
     .chat-header {
-      background: var(--user-color);
+      background: var(--header-bg);
       color: #fff;
       padding: 20px;
       text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: row-reverse;
     }
     .chat-header h1 {
       font-size: 1.5em;
       font-weight: 500;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      margin: 0;
+      text-align: center;
+      flex: 1;
     }
     .chat-header select {
       padding: 5px;
@@ -109,17 +118,17 @@
     .chat-input {
       display: flex;
       padding: 15px;
-      background: #eee;
+      background: var(--chat-input-bg);
       position: relative;
     }
     .chat-input textarea {
       flex: 1;
       padding: 10px 15px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--input-border);
       border-radius: 20px;
       outline: none;
       transition: border 0.3s, background 0.3s;
-      background: white;
+      background: var(--input-bg);
       resize: none;
       height: 40px;
       font-family: inherit;
@@ -137,7 +146,7 @@
       background: var(--user-color);
       border: none;
       padding: 10px 20px;
-      margin-left: 10px;
+      margin-left: 20px;
       color: #fff;
       border-radius: 20px;
       cursor: pointer;
@@ -185,11 +194,11 @@
     }
 
     @keyframes bounce {
-      0%, 80%, 100% { 
+      0%, 80%, 100% {
         transform: scale(0);
         opacity: 0.3;
       }
-      40% { 
+      40% {
         transform: scale(1);
         opacity: 0.8;
       }
@@ -199,7 +208,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #fff;
+      background: var(--footer-bg);
       padding: 10px 20px;
     }
     .footer a {
@@ -207,35 +216,177 @@
       text-decoration: none;
       font-weight: 500;
     }
-    .footer button {
-      padding: 8px 12px;
+
+    /* Hamburger Menu Styles */
+    .hamburger-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 1000;
+    }
+
+    .hamburger-icon {
+      cursor: pointer;
+      padding: 10px;
+      font-size: 24px;
+      color: white;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background-color: var(--input-bg);
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1001;
+      border-radius: 8px;
+      padding: 8px 0;
+      border: 1px solid var(--input-border);
+    }
+
+    .menu-content button {
+      width: 100%;
+      padding: 12px 16px;
+      text-align: right;
+      border: none;
+      background: none;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .menu-content button:hover {
+      background-color: var(--bot-bg);
+    }
+
+    .menu-content.show {
+      display: block;
+    }
+
+    .btn-danger {
+      color: #dc3545 !important;
+    }
+
+    /* Dialog Styles */
+    .dialog-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1002;
+    }
+
+    .dialog {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--input-bg);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 1003;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .dialog h2 {
+      margin-bottom: 15px;
+      color: var(--user-color);
+    }
+
+    .dialog p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .dialog ul {
+      margin: 10px 0;
+      padding-right: 20px;
+    }
+
+    .dialog li {
+      margin-bottom: 8px;
+    }
+
+    .dialog button {
+      margin-top: 15px;
+      padding: 8px 16px;
       background: var(--user-color);
       color: white;
       border: none;
-      border-radius: 20px;
+      border-radius: 4px;
       cursor: pointer;
-      margin-left: 10px;
     }
-    .footer .btn-danger {
-      background: #dc3545;
+
+    .dialog button:hover {
+      background: #0056b3;
     }
   </style>
 </head>
 <body>
 <div class="chat-container" id="app">
   <div class="chat-header">
-    <h1>מני - המאמן שלך להגדלת הכנסות ללא סיכון</h1>
+    <h1>{{ chatbot_config.name }} - {{ chatbot_config.title }}</h1>
+    <div class="hamburger-menu">
+      <div class="hamburger-icon">☰</div>
+      <div class="menu-content">
+        <button onclick="downloadTranscript()">להוריד תמלול</button>
+        <button onclick="showHelp()">עזרה והנחיות</button>
+        <button onclick="showAbout()">אודות</button>
+        <!-- Manual toggle: default light mode -->
+        <button id="toggleModeBtn" onclick="toggleDarkMode()">מצב לילה</button>
+        <button onclick="window.location.href='/logout'" class="btn-danger">התנתק</button>
+      </div>
+    </div>
   </div>
+
+  <!-- Help Dialog -->
+  <div id="helpDialog" class="dialog">
+    <h2>עזרה והנחיות</h2>
+    <p>ברוכים הבאים ל{{ chatbot_config.name }}! הנה כמה הנחיות שיעזרו לך להשתמש בצ'אטבוט:</p>
+    <ul>
+      <li>הקלד את השאלה שלך בתיבת הטקסט בתחתית המסך</li>
+      <li>לחץ על כפתור "שלח" או הקש Enter כדי לשלוח את ההודעה</li>
+      <li>הצ'אטבוט יענה לך בהקדם האפשרי</li>
+      <li>תוכל לשמור את כל השיחה באמצעות כפתור "שמור צ'אט" בתפריט</li>
+      <li>להתנתקות מהמערכת, לחץ על כפתור "התנתק" בתפריט</li>
+    </ul>
+    <p>אם אתה נתקל בבעיות או שיש לך שאלות נוספות, אנא צור קשר בכתובת:</p>
+    <p><a href="mailto:{{ chatbot_config.contact_email }}">{{ chatbot_config.contact_email }}</a></p>
+    <button onclick="closeHelp()">סגור</button>
+  </div>
+
+  <!-- About Dialog -->
+  <div id="aboutDialog" class="dialog">
+    <h2>אודות {{ chatbot_config.name }}</h2>
+    <p>{{ chatbot_config.description }}</p>
+    <p>גרסה: {{ chatbot_config.version }}</p>
+    <p>צור קשר:</p>
+    <p><a href="mailto:{{ chatbot_config.contact_email }}">{{ chatbot_config.contact_email }}</a></p>
+    <button onclick="closeAbout()">סגור</button>
+  </div>
+
+  <div class="dialog-overlay" id="dialogOverlay"></div>
 
   <div id="chatBox" class="chat-box">
-  <div class="message bot">
-    שלום! אני מני, המאמן האישי שלך להגדלת הכנסות ללא סיכון.<br>
-    אני כאן כדי לעזור לך לזהות חסמים ולהדריך אותך בדרך להגדלת ההכנסות שלך.<br>
-    איך אוכל לעזור לך היום?
-    <div class="timestamp">Just now</div>
+    <div class="message bot">
+      {{ chatbot_config.welcome_message | safe }}
+      <div class="timestamp">Just now</div>
+    </div>
   </div>
-</div>
-
 
   <div id="typingIndicator" class="message bot">
     <div class="typing-dots"><span></span><span></span><span></span></div>
@@ -247,18 +398,10 @@
   </div>
 
   <footer class="footer">
-    <a href="mailto:contact@oferlevy.co.il">contact@oferlevy.co.il</a>
-    <div>
-      <button onclick="downloadTranscript()">Save Chat</button>
-      <button onclick="window.location.href='/logout'">התנתק</button>
-    </div>
+    <a href="mailto:{{ chatbot_config.contact_email }}">{{ chatbot_config.contact_email }}</a>
   </footer>
 </div>
 <script>
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-    }
-
     function getCurrentTimestamp() {
       const now = new Date();
       return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -277,7 +420,7 @@
       const messageElement = document.createElement('div');
       const isUser = sender.toLowerCase() === 'you';
       messageElement.classList.add('message', isUser ? 'user' : 'bot');
-      
+
       if (isHebrew(text)) {
         messageElement.classList.add('rtl');
       } else {
@@ -286,12 +429,12 @@
 
       const formattedText = isUser ? text : formatBotTextMarkdown(text);
       messageElement.innerHTML = formattedText;
-      
+
       const timestamp = document.createElement('div');
       timestamp.classList.add('timestamp');
       timestamp.textContent = getCurrentTimestamp();
       messageElement.appendChild(timestamp);
-      
+
       document.getElementById('chatBox').appendChild(messageElement);
       messageElement.scrollIntoView({ behavior: 'smooth' });
     }
@@ -312,8 +455,62 @@
       URL.revokeObjectURL(url);
     }
 
+    // Toggle dark/light mode; default is light mode.
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark-mode');
+      const btn = document.getElementById("toggleModeBtn");
+      if (document.documentElement.classList.contains('dark-mode')) {
+        btn.textContent = "מצב יום";
+      } else {
+        btn.textContent = "מצב לילה";
+      }
+    }
+
     $(document).ready(function() {
       let waitingForBot = false;
+      let sessionCheckInterval;
+
+      // Hamburger menu functionality
+      const hamburgerIcon = $('.hamburger-icon');
+      const menuContent = $('.menu-content');
+
+      hamburgerIcon.on('click', function(e) {
+        e.stopPropagation();
+        menuContent.toggleClass('show');
+      });
+
+      // Close menu when clicking outside
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('.hamburger-menu').length) {
+          menuContent.removeClass('show');
+        }
+      });
+
+      // Prevent menu from closing when clicking inside it
+      menuContent.on('click', function(e) {
+        e.stopPropagation();
+      });
+
+      function checkSession() {
+        $.ajax({
+          url: '/check_session',
+          type: 'GET',
+          success: function(response) {
+            if (response.status === 'expired') {
+              clearInterval(sessionCheckInterval);
+              window.location.href = '/login';
+            }
+          }
+        });
+      }
+
+      // Start session checking every 30 seconds
+      sessionCheckInterval = setInterval(checkSession, 30000);
+
+      // Check session on any user interaction
+      $(document).on('mousemove keydown click', function() {
+        checkSession();
+      });
 
       function updateInputState(isDisabled) {
         $('#userInput').prop('disabled', isDisabled);
@@ -373,6 +570,41 @@
         const userEmail = "{{ session.get('user_email', '') }}";
         document.getElementById('userEmail').textContent = userEmail;
       });
+    });
+
+    function showHelp() {
+      document.getElementById('helpDialog').style.display = 'block';
+      document.getElementById('dialogOverlay').style.display = 'block';
+    }
+
+    function closeHelp() {
+      document.getElementById('helpDialog').style.display = 'none';
+      document.getElementById('dialogOverlay').style.display = 'none';
+    }
+
+    function showAbout() {
+      document.getElementById('aboutDialog').style.display = 'block';
+      document.getElementById('dialogOverlay').style.display = 'block';
+    }
+
+    function closeAbout() {
+      document.getElementById('aboutDialog').style.display = 'none';
+      document.getElementById('dialogOverlay').style.display = 'none';
+    }
+
+    // Close dialogs when clicking outside
+    document.getElementById('dialogOverlay').addEventListener('click', function() {
+      closeHelp();
+      closeAbout();
+    });
+
+    // Prevent dialog from closing when clicking inside
+    document.getElementById('helpDialog').addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    document.getElementById('aboutDialog').addEventListener('click', function(e) {
+      e.stopPropagation();
     });
 </script>
 </body>
