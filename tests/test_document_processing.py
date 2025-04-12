@@ -95,9 +95,9 @@ def sample_empty_file():
 
 def test_extract_text_from_txt_file(app, sample_text_file):
     """Test text extraction from a .txt file."""
-    from app_rag import extract_text_from_file
+    from app.services.document_service import extract_text_from_file
     
-    with patch('app_rag.secure_filename', return_value=sample_text_file.filename):
+    with patch('app.services.document_service.secure_filename', return_value=sample_text_file.filename):
         result = extract_text_from_file(sample_text_file)
     
     assert result == 'This is a sample text file for testing.'
@@ -105,7 +105,7 @@ def test_extract_text_from_txt_file(app, sample_text_file):
 
 def test_extract_text_from_docx_file(app, sample_docx_file):
     """Test text extraction from a .docx file."""
-    from app_rag import extract_text_from_file
+    from app.services.document_service import extract_text_from_file
     
     # Create mock paragraphs
     mock_para1 = MagicMock()
@@ -125,8 +125,8 @@ def test_extract_text_from_docx_file(app, sample_docx_file):
     
     # Patch multiple components to fully control the execution flow
     with patch('docx.Document', return_value=mock_doc) as mock_document, \
-         patch('app_rag.tempfile.NamedTemporaryFile', return_value=mock_temp), \
-         patch('app_rag.secure_filename', return_value="test.docx"), \
+         patch('app.services.document_service.tempfile.NamedTemporaryFile', return_value=mock_temp), \
+         patch('app.services.document_service.secure_filename', return_value="test.docx"), \
          patch('os.path.exists', return_value=True), \
          patch('builtins.open', mock_open(read_data=sample_docx_file.read())), \
          patch('os.remove'):  # Prevent actual file deletion
@@ -154,9 +154,9 @@ def test_extract_text_from_pdf_file(app, sample_pdf_file):
     # let's mock the extract_text_from_file function itself
     
     # Directly patch and verify the extract_text_from_file function
-    with patch('app_rag.extract_text_from_file', return_value="This is PDF text content.") as mock_extract:
+    with patch('app.services.document_service.extract_text_from_file', return_value="This is PDF text content.") as mock_extract:
         # Import the function here to use the mocked version
-        from app_rag import extract_text_from_file
+        from app.services.document_service import extract_text_from_file
         
         # Call the mocked function
         result = extract_text_from_file(sample_pdf_file)
@@ -173,9 +173,9 @@ def test_extract_text_from_pdf_file(app, sample_pdf_file):
 
 def test_extract_text_from_unsupported_file(app, sample_unsupported_file):
     """Test text extraction from an unsupported file type."""
-    from app_rag import extract_text_from_file
+    from app.services.document_service import extract_text_from_file
     
-    with patch('app_rag.secure_filename', return_value=sample_unsupported_file.filename):
+    with patch('app.services.document_service.secure_filename', return_value=sample_unsupported_file.filename):
         try:
             result = extract_text_from_file(sample_unsupported_file)
             # If no exception, should return empty string
@@ -187,9 +187,9 @@ def test_extract_text_from_unsupported_file(app, sample_unsupported_file):
 
 def test_extract_text_from_empty_file(app, sample_empty_file):
     """Test text extraction from an empty file."""
-    from app_rag import extract_text_from_file
+    from app.services.document_service import extract_text_from_file
     
-    with patch('app_rag.secure_filename', return_value=sample_empty_file.filename):
+    with patch('app.services.document_service.secure_filename', return_value=sample_empty_file.filename):
         result = extract_text_from_file(sample_empty_file)
     
     assert result == "" or "empty" in result.lower() 

@@ -72,4 +72,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST 
+MANIFEST
+
+# Archive folder (for unused files)
+archive/ 

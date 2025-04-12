@@ -17,10 +17,11 @@ import pytest
 from datetime import timedelta
 from unittest.mock import patch, mock_open
 
-# Add the parent directory to the path so we can import app_rag
+# Add the parent directory to the path so we can import app modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app_rag import app as flask_app
+# Import the Flask app from the new app structure
+from app import app as flask_app
 
 
 @pytest.fixture

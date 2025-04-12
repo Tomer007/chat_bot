@@ -28,8 +28,8 @@ from unittest.mock import patch
 def test_login_get(client):
     """Test the login page loads correctly."""
     # Skip the before_request function and any config loading failures
-    with patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-         patch('app_rag.before_request'):
+    with patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}), \
+         patch('app.routes.auth.before_request'):
         response = client.get('/login')
         assert response.status_code == 200
 
@@ -39,8 +39,8 @@ def test_login_post_success(client, monkeypatch):
     # Mock the password from environment for testing
     monkeypatch.setenv("USER_PASSWORD", "test_password")
     
-    with patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-         patch('app_rag.before_request'):
+    with patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}), \
+         patch('app.routes.auth.before_request'):
         response = client.post('/login', data={
             'username': 'test_user',
             'password': 'test_password',
@@ -61,8 +61,8 @@ def test_login_post_invalid_password(client, monkeypatch):
     # Mock the password for testing
     monkeypatch.setenv("USER_PASSWORD", "correct_password")
     
-    with patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-         patch('app_rag.before_request'):
+    with patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}), \
+         patch('app.routes.auth.before_request'):
         response = client.post('/login', data={
             'username': 'test_user',
             'password': 'wrong_password'
@@ -78,7 +78,7 @@ def test_login_post_invalid_password(client, monkeypatch):
 
 def test_logout(authenticated_client):
     """Test logout clears the session."""
-    with patch('app_rag.before_request'):
+    with patch('app.routes.auth.before_request'):
         response = authenticated_client.get('/logout')
         
         # Should redirect to login page
@@ -92,8 +92,8 @@ def test_logout(authenticated_client):
 
 def test_session_status_authenticated(authenticated_client):
     """Test session-status endpoint when authenticated."""
-    with patch('app_rag.before_request'), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}):
+    with patch('app.routes.auth.before_request'), \
+         patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}):
         
         # Make sure we have a valid session
         with authenticated_client.session_transaction() as session:
@@ -125,8 +125,8 @@ def test_session_status_authenticated(authenticated_client):
 
 def test_session_status_unauthenticated(client):
     """Test session-status endpoint when not authenticated."""
-    with patch('app_rag.before_request'), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}):
+    with patch('app.routes.auth.before_request'), \
+         patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}):
         
         # Make sure no user_id in session
         with client.session_transaction() as session:
@@ -162,9 +162,9 @@ def test_check_session_expired(client, app):
     
     try:
         # Need to patch at the correct level to prevent before_request from clearing the session
-        with patch('app_rag.before_request', return_value=None), \
-             patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-             patch('app_rag.datetime') as mock_datetime:
+        with patch('app.routes.auth.before_request', return_value=None), \
+             patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}), \
+             patch('app.routes.auth.datetime') as mock_datetime:
             
             # Fix the current time to ensure consistent expiry check
             mock_datetime.now.return_value = datetime.now()
@@ -205,9 +205,9 @@ def test_check_session_active(authenticated_client, app):
     
     try:
         # Need to patch at the correct level to prevent before_request from interfering
-        with patch('app_rag.before_request', return_value=None), \
-             patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-             patch('app_rag.datetime') as mock_datetime:
+        with patch('app.routes.auth.before_request', return_value=None), \
+             patch('app.routes.auth.load_chatbot_config', return_value={"name": "test"}), \
+             patch('app.routes.auth.datetime') as mock_datetime:
             
             # Fix the current time to ensure consistent activity check
             mock_datetime.now.return_value = current_time + timedelta(minutes=1)  # 1 minute later
@@ -240,8 +240,8 @@ def test_index_authenticated(authenticated_client, app):
         session['last_activity'] = current_time.isoformat()
     
     # Create comprehensive mocks to isolate the test
-    with patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.load_chatbot_config', return_value={
+    with patch('app.routes.auth.before_request', return_value=None), \
+         patch('app.routes.auth.load_chatbot_config', return_value={
              "name": "test",
              "title": "Test Chatbot",
              "description": "Test chatbot for testing",
@@ -249,9 +249,9 @@ def test_index_authenticated(authenticated_client, app):
              "contact_email": "test@example.com",
              "version": "1.0.0"
          }), \
-         patch('app_rag.datetime') as mock_datetime, \
-         patch('app_rag.render_template', return_value='Mocked template'), \
-         patch('app_rag.session', {'user_id': 'test_user', 'last_activity': current_time.isoformat()}):
+         patch('app.routes.auth.datetime') as mock_datetime, \
+         patch('app.routes.auth.render_template', return_value='Mocked template'), \
+         patch('app.routes.auth.session', {'user_id': 'test_user', 'last_activity': current_time.isoformat()}):
         
         # Mock datetime for consistent time checks
         mock_datetime.now.return_value = current_time

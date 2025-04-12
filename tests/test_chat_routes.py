@@ -54,13 +54,13 @@ def test_chat_upload_text_only(authenticated_client, mock_openai_response, app):
         session['last_activity'] = current_time.isoformat()
     
     # Create complete mocks
-    with patch('app_rag.client.chat.completions.create', return_value=mock_openai_response), \
-         patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.datetime') as mock_datetime, \
-         patch('app_rag.conversation_history', {}), \
-         patch('app_rag.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}):
+    with patch('app.routes.chat.client.chat.completions.create', return_value=mock_openai_response), \
+         patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request', return_value=None), \
+         patch('app.routes.chat.datetime') as mock_datetime, \
+         patch('app.routes.chat.conversation_history', {}), \
+         patch('app.routes.chat.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
+         patch('app.routes.chat.load_chatbot_config', return_value={"name": "test"}):
         
         # Mock datetime for consistent time checks
         mock_datetime.now.return_value = current_time
@@ -109,15 +109,15 @@ def test_chat_upload_with_file(authenticated_client, mock_openai_response, app):
     
     # We'll skip mocking request.files and directly test the endpoint with a real file
     # This avoids the request context issue
-    with patch('app_rag.client.chat.completions.create', return_value=mock_openai_response), \
-         patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.datetime') as mock_datetime, \
-         patch('app_rag.conversation_history', {}), \
-         patch('app_rag.extract_text_from_file', return_value="Extracted text from file"), \
-         patch('app_rag.secure_filename', return_value='test.txt'), \
-         patch('app_rag.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
+    with patch('app.routes.chat.client.chat.completions.create', return_value=mock_openai_response), \
+         patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request', return_value=None), \
+         patch('app.routes.chat.datetime') as mock_datetime, \
+         patch('app.routes.chat.conversation_history', {}), \
+         patch('app.routes.chat.extract_text_from_file', return_value="Extracted text from file"), \
+         patch('app.routes.chat.secure_filename', return_value='test.txt'), \
+         patch('app.routes.chat.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
+         patch('app.routes.chat.load_chatbot_config', return_value={"name": "test"}), \
          patch('builtins.open', mock_open(read_data=test_file_content)):
         
         # Mock datetime for consistent time checks
@@ -174,15 +174,15 @@ def test_chat_upload_with_pdf(authenticated_client, mock_openai_response, app):
         session['last_activity'] = current_time.isoformat()
     
     # Create complete mocks for the endpoint request but skip file upload
-    with patch('app_rag.client.chat.completions.create', return_value=mock_openai_response), \
-         patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.datetime') as mock_datetime, \
-         patch('app_rag.conversation_history', {}), \
-         patch('app_rag.extract_text_from_file', return_value="Extracted PDF text"), \
-         patch('app_rag.secure_filename', return_value='test.pdf'), \
-         patch('app_rag.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}):
+    with patch('app.routes.chat.client.chat.completions.create', return_value=mock_openai_response), \
+         patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request', return_value=None), \
+         patch('app.routes.chat.datetime') as mock_datetime, \
+         patch('app.routes.chat.conversation_history', {}), \
+         patch('app.routes.chat.extract_text_from_file', return_value="Extracted PDF text"), \
+         patch('app.routes.chat.secure_filename', return_value='test.pdf'), \
+         patch('app.routes.chat.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
+         patch('app.routes.chat.load_chatbot_config', return_value={"name": "test"}):
         
         # Mock datetime for consistent time checks
         mock_datetime.now.return_value = current_time
@@ -225,8 +225,8 @@ def test_chat_upload_unauthenticated(client):
     """Test the chat_upload endpoint when not authenticated."""
     # In real app this should redirect to login, but we'll test the endpoint directly
     # by patching the login_required decorator to ensure we're testing our endpoint logic
-    with patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request'), \
+    with patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request'), \
          patch('flask.session', {'user_id': None}):  # Simulate no user in session
         
         response = client.post('/api/chat_upload', data={
@@ -252,10 +252,10 @@ def test_chat_upload_invalid_request(authenticated_client, app):
         session['session_id'] = '12345'  # Add session_id
     
     # Create minimal patches to avoid interfering with test client's session
-    with patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-         patch('app_rag.conversation_history', {}):
+    with patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request', return_value=None), \
+         patch('app.routes.chat.load_chatbot_config', return_value={"name": "test"}), \
+         patch('app.routes.chat.conversation_history', {}):
         
         # Simple request with empty data
         response = authenticated_client.post(
@@ -324,14 +324,14 @@ def test_chat_upload_api_error(authenticated_client, app):
     api_error = MockOpenAIError("API Error: Invalid request")
     
     # Patch more comprehensively to handle all aspects of the request
-    with patch('app_rag.client.chat.completions.create', side_effect=api_error), \
-         patch('app_rag.login_required', mock_login_required), \
-         patch('app_rag.before_request', return_value=None), \
-         patch('app_rag.datetime') as mock_datetime, \
-         patch('app_rag.conversation_history', {}), \
-         patch('app_rag.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
-         patch('app_rag.load_chatbot_config', return_value={"name": "test"}), \
-         patch('app_rag.generate_response', side_effect=api_error):  # Also patch this function directly
+    with patch('app.routes.chat.client.chat.completions.create', side_effect=api_error), \
+         patch('app.routes.chat.login_required', mock_login_required), \
+         patch('app.routes.chat.before_request', return_value=None), \
+         patch('app.routes.chat.datetime') as mock_datetime, \
+         patch('app.routes.chat.conversation_history', {}), \
+         patch('app.routes.chat.session', {'user_id': 'test_user', 'session_id': '12345', 'last_activity': current_time.isoformat()}), \
+         patch('app.routes.chat.load_chatbot_config', return_value={"name": "test"}), \
+         patch('app.routes.chat.generate_response', side_effect=api_error):  # Also patch this function directly
         
         # Mock datetime
         mock_datetime.now.return_value = current_time

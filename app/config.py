@@ -19,7 +19,7 @@ TEMPERATURE = float(os.getenv("TEMPERATURE", 0.7))
 
 # Document paths
 DOCX_FILE_PATH = os.getenv("DOCX_FILE_PATH", "doc/rag_content.txt")
-PROMPT_FILE = os.getenv("BUDDY_PROMPT_FILE", "prompts/buddy_prompt.txt")
+PROMPT_FILE = os.getenv("PROMPT_FILE", "prompts/system_prompt.txt")
 
 # Chatbot configuration
 def load_chatbot_config():

@@ -24,7 +24,7 @@ python run_tests_and_app.py
 To run a specific test file:
 
 ```bash
-pytest -v tests/test_auth_routes.py
+pytest -v tests/test_chat_routes.py
 ```
 
 To run a specific test:
@@ -38,11 +38,15 @@ pytest -v tests/test_auth_routes.py::test_login_post_success
 The tests were designed to work with the application's modular architecture:
 
 1. The `app/` package contains the application code organized into modules:
-   - `routes/`: Contains route blueprints
-   - `services/`: Contains business logic 
-   - `utils/`: Contains utility functions
+   - `routes/`: Contains route blueprints (auth.py, chat.py)
+   - `services/`: Contains business logic (chat_service.py, document_service.py)
+   - `utils/`: Contains utility functions (decorators.py, logging_config.py)
 
-2. When running tests:
+2. All import paths now follow the pattern `app.routes.*`, `app.services.*`, or `app.utils.*`:
+   - For example, the chat routes are imported using `from app.routes.chat import ...`
+   - Previously, some modules used the path `app_rag`, which has been updated
+
+3. When running tests:
    - Each test imports from the appropriate module
    - The refactored architecture makes it easier to test individual components
    - Mock objects can be used to isolate components for testing
@@ -56,6 +60,8 @@ If you still have issues, you can explicitly set the Python path:
 ```bash
 PYTHONPATH=. pytest -v
 ```
+
+If you see errors related to import paths like 'app_rag', ensure all imports have been updated to use the new module structure (app.routes.*, app.services.*, etc.).
 
 ## Test Coverage
 

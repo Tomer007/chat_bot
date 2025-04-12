@@ -58,25 +58,24 @@ chat_bot/
 
 ## Installation
 
-Use a virtual environment
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 1. Clone the repository:
 ```bash
 git clone https://github.com/Tomer007/chat_bot.git
 cd chat_bot
 ```
 
-2. Install dependencies:
+2. Set up a virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables:
+4. Set up environment variables:
 Create a `.env` file with your OpenAI API key:
 ```
 OPENAI_API_KEY=your_api_key_here
@@ -86,12 +85,12 @@ CHATBOT_NAME=default
 DEBUG=False
 ```
 
-4. Run the application:
+5. Run the application:
 ```bash
 python app.py
 ```
 
-5. Run tests and start the application:
+6. Run tests and start the application:
 ```bash
 # Using the helper script (recommended)
 python run_tests_and_app.py
@@ -101,13 +100,31 @@ python -m pytest && python app.py
 ```
 
 ## Deployment
+
+The application is configured for easy deployment on Render.com:
+
+1. Set up environment for deployment:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-The application is configured for easy deployment on Render.com. Simply connect your GitHub repository to Render and deploy using the provided `render.yaml` configuration.
+2. Connect your GitHub repository to Render and deploy using the provided `render.yaml` configuration.
+
+## Testing
+
+Run the test suite to verify functionality:
+
+```bash
+# Run all tests
+python -m pytest -v
+
+# Run specific test file
+python -m pytest -v tests/test_chat_routes.py
+```
+
+For more details on testing, see the [tests/README.md](tests/README.md) file.
 
 ## Contributing
 
@@ -119,4 +136,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-For any questions or support, please contact: contact@oferlevy.co.il 
+For any questions or support, please contact: tomergur@gmail.com
