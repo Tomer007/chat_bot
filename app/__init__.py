@@ -80,6 +80,21 @@ def create_app(test_config=None):
             logger.error(f"Request failed with exception: {str(exception)}")
             logger.error(f"Stack trace: {error_details}")
     
+    @app.errorhandler(404)
+    def handle_not_found(e):
+        """Handle 404 errors with appropriate logging level based on the requested path"""
+        # Common files that browsers request automatically - log at INFO level only
+        common_missing_files = ['/favicon.ico', '/apple-touch-icon.png', '/robots.txt']
+        
+        if request.path in common_missing_files:
+            # Log these common 404s at INFO level instead of ERROR
+            logger.info(f"Common 404: {request.path} - Not found but expected")
+            return {"error": "Not found"}, 404
+        else:
+            # Log other 404s at WARNING level
+            logger.warning(f"404 Not Found: {request.path}")
+            return {"error": "The requested resource was not found"}, 404
+    
     @app.errorhandler(Exception)
     def handle_exception(e):
         # Log any unhandled exceptions
@@ -89,6 +104,11 @@ def create_app(test_config=None):
         
         # Return a generic error response
         return {"error": "An unexpected error occurred"}, 500
+    
+    # Simple favicon route to avoid 404 errors
+    @app.route('/favicon.ico')
+    def favicon():
+        return app.send_static_file('favicon.ico')
     
     # Register blueprints
     register_blueprints(app)
