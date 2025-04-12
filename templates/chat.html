@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{% include "partials/theme_styles.html" %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+<style>
+    header {
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 1rem;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .hamburger-menu {
+      position: absolute;
+      left: -1rem;
+    }
+
+    header h1 {
+      flex: 1;
+      text-align: center;
+      margin: 0;
+    }
+
+    .hamburger-menu button {
+      background-color: #007bff;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .hamburger-menu button:hover {
+      background-color: #0056b3;
+    }
+
+
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container" id="app">
+    <header>
+        <div class="header-container">
+            <button id="hamburgerIcon" class="hamburger-icon" aria-label="Menu">
+                <span class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                </span>
+            </button>
+            <div id="menuContent" class="menu-content">
+                <div class="menu-items">
+                    <div class="menu-item" data-action="download">
+                        <i class="fas fa-download"></i> הורד את הצ'אט
+                    </div>
+                    <div class="menu-item" data-action="help">
+                        <i class="fas fa-question-circle"></i> עזרה
+                    </div>
+                    <div class="menu-item" data-action="about">
+                        <i class="fas fa-info-circle"></i> אודות
+                    </div>
+                    <div class="menu-item" data-action="theme">
+                        <i class="fas fa-moon theme-icon"></i> <span class="theme-text">מצב כהה</span>
+                    </div>
+                    <div class="menu-item" data-action="logout">
+                        <i class="fas fa-sign-out-alt"></i> התנתק מהמערכת
+                    </div>
+                </div>
+            </div>
+            <div id="menuOverlay" class="menu-overlay"></div>
+        </div>
+        <h1>{{ chatbot_config.title | safe }}</h1>
+    </header>
+
+    <main class="chat-main">
+        <div id="chatBox" class="chat-box">
+            <div class="message bot">
+                {{ chatbot_config.welcome_message | safe }}
+                <div class="timestamp">Just now</div>
+            </div>
+        </div>
+
+        <div id="typingIndicator" class="message bot" aria-hidden="true">
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="chat-input">
+            <div class="input-wrapper">
+                <div class="input-group">
+            <textarea
+                    id="userInput"
+                    placeholder="הקלד הודעה כאן..."
+                    rows="1"
+                    maxlength="1000"
+                    aria-label="הודעה"
+                    dir="rtl"
+                    style="text-align: right; height: 25px; line-height: 10px; padding-right: 150px;"
+            ></textarea>
+                    <!-- Font Awesome (once in base layout or head) -->
+                    <link rel="stylesheet"
+                          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+                    <div class="input-controls">
+                        <!-- Mic Button -->
+                        <button id="micButton" class="mic-button" title="הקלטה קולית" aria-label="הקלטה קולית">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+
+                        <!-- Send Button -->
+                        <button id="sendButton" class="send-button" title="שלח" aria-label="שלח">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+
+                        <button id="uploadButton" type="button" class="upload-button" title="צרף קובץ" aria-label="צרף קובץ">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="file" id="fileInput" style="display: none;">
+
+                        <!-- Upload Button -->
+
+                    </div>
+
+                    <div class="input-footer">
+                        <span class="char-counter">0/1000</span>
+                    </div>
+                </div>
+            </div>
+    </main>
+    <footer class="footer">
+        <a href="mailto:{{ chatbot_config.contact_email }}" aria-label="צור קשר">{{ chatbot_config.contact_email }}</a>
+    </footer>
+
+    {% include "partials/dialogs.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module">
+    import { ChatUI } from "{{ url_for('static', filename='js/chat.js') }}";
+</script>
+{% endblock %}

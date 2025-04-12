@@ -1,0 +1,99 @@
+<style>
+  /* Theme Variables */
+  :root {
+    --bg-color: #f1f1f1;
+    --text-color: #333;
+    --user-color: #007bff;
+    --bot-bg: #e4e6eb;
+    --transition: background-color 0.3s, color 0.3s;
+    --header-bg: #007bff;
+    --footer-bg: #fff;
+    --input-bg: #fff;
+    --input-border: #ccc;
+    --chat-input-bg: #eee;
+    --hover-bg: rgba(0, 0, 0, 0.1);
+    --danger-color: #dc3545;
+    --danger-bg: rgba(220, 53, 69, 0.1);
+  }
+
+  [data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --user-color: #1e88e5;
+    --bot-bg: #333333;
+    --header-bg: #1a1a1a;
+    --footer-bg: #1a1a1a;
+    --input-bg: #1c1c1c;
+    --input-border: #444444;
+    --chat-input-bg: #333;
+    --hover-bg: rgba(255, 255, 255, 0.1);
+    --danger-color: #ff6b6b;
+    --danger-bg: rgba(255, 107, 107, 0.1);
+  }
+
+  /* Base Styles */
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    transition: var(--transition); 
+  }
+
+  html, body { 
+    height: 100%; 
+    width: 100%; 
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: stretch;
+  }
+
+  /* Apply theme variables to specific elements */
+  .chat-container {
+    background: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .chat-header {
+    background: var(--header-bg);
+    color: white;
+  }
+
+  .chat-input {
+    background: var(--chat-input-bg);
+  }
+
+  .message.bot {
+    background: var(--bot-bg);
+  }
+
+  .message.user {
+    background: var(--user-color);
+    color: white;
+  }
+
+  .menu-content {
+    background: var(--input-bg);
+    border-color: var(--input-border);
+  }
+
+  .menu-item {
+    color: var(--text-color);
+  }
+
+  .menu-item:hover {
+    background: var(--hover-bg);
+  }
+
+  .menu-item.btn-danger {
+    color: var(--danger-color);
+  }
+
+  .menu-item.btn-danger:hover {
+    background: var(--danger-bg);
+  }
+</style> 

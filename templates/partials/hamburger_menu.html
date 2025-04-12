@@ -1,0 +1,172 @@
+<nav class="hamburger-menu">
+  <button class="hamburger-icon" aria-label="תפריט" id="hamburgerButton">☰</button>
+  <div class="menu-content" id="menuContent">
+    <button class="menu-item" data-action="help">
+      <span class="menu-icon">❓</span>
+      <span class="menu-text">עזרה והנחיות</span>
+    </button>
+    <button class="menu-item" data-action="download">
+      <span class="menu-icon">💾</span>
+      <span class="menu-text">להוריד תמלול</span>
+    </button>
+    <button class="menu-item" data-action="about">
+      <span class="menu-icon">ℹ️</span>
+      <span class="menu-text">אודות</span>
+    </button>
+    <button class="menu-item" id="toggleModeBtn" data-action="theme">
+      <span class="menu-icon theme-icon">🌙</span>
+      <span class="menu-text theme-text">מצב לילה</span>
+    </button>
+    <button class="menu-item" data-action="logout">
+      <span class="menu-icon">🚪</span>
+      <span class="menu-text">התנתק מהמערכת</span>
+    </button>
+  </div>
+</nav>
+
+<style>
+  /* Hamburger Menu */
+  .hamburger-menu {
+    position: relative;
+    z-index: 1000;
+  }
+
+  .hamburger-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1001;
+    color: white;
+    font-size: 24px;
+  }
+
+  .menu-content {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100vh;
+    background-color: #007bff;
+    color: white;
+    box-shadow: -2px 0 5px rgba(187, 18, 18, 0.1);
+    transition: right 0.3s ease;
+    z-index: 999;
+    padding: 80px 20px 20px;
+    overflow-y: auto;
+  }
+
+  .menu-content.show {
+    right: 0;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    color: var(--text-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border-color);
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .menu-item:hover {
+    color: var(--primary-color);
+  }
+
+  .menu-icon {
+    margin-left: 10px;
+    font-size: 1.2em;
+  }
+
+  .menu-text {
+    flex: 1;
+    text-align: right;
+  }
+
+  /* Dark mode support */
+  [data-theme="dark"] .menu-content {
+    background-color: var(--background-color);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] .menu-item {
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+  }
+
+  [data-theme="dark"] .menu-item:hover {
+    color: var(--primary-color);
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerButton = document.getElementById('hamburgerButton');
+    const menuContent = document.getElementById('menuContent');
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    // Toggle menu
+    hamburgerButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menuContent.classList.toggle('show');
+      document.body.classList.toggle('menu-open');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!menuContent.contains(e.target) && !hamburgerButton.contains(e.target)) {
+        menuContent.classList.remove('show');
+        document.body.classList.remove('menu-open');
+      }
+    });
+
+    // Handle menu item clicks
+    menuItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const action = item.getAttribute('data-action');
+        
+        switch(action) {
+          case 'help':
+            showHelpDialog();
+            break;
+          case 'download':
+            downloadChat();
+            break;
+          case 'about':
+            showAboutDialog();
+            break;
+          case 'theme':
+            toggleTheme();
+            break;
+          case 'logout':
+            window.location.href = "{{ url_for('auth.logout') }}";
+            break;
+        }
+
+        // Close menu after action
+        menuContent.classList.remove('show');
+        document.body.classList.remove('menu-open');
+      });
+    });
+
+    // Prevent menu from closing when clicking inside
+    menuContent.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  });
+</script> 

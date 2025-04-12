@@ -1,0 +1,37 @@
+<!-- Dialogs -->
+<div id="dialogOverlay" class="dialog-overlay" aria-hidden="true"></div>
+
+<dialog id="helpDialog" class="dialog" aria-labelledby="helpDialogTitle">
+  <div class="dialog-content">
+    <button class="close-button" aria-label="סגור">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 id="helpDialogTitle">עזרה</h2>
+    <div class="dialog-body">
+      <p>ברוכים הבאים לצ'אט {{ chatbot_config.name }}!</p>
+      <h3>כיצד להשתמש במערכת:</h3>
+      <ul>
+        <li>הקלד את שאלתך או בקשתך בתיבת ההקלדה למטה.</li>
+        <li>לחץ על כפתור השליחה או הקש Enter כדי לשלוח את ההודעה.</li>
+        <li>ניתן להעלות קבצים באמצעות כפתור המהדק.</li>
+        <li>ניתן להשתמש בהקלטת קול באמצעות כפתור המיקרופון.</li>
+      </ul>
+      <p>אם יש לך שאלות נוספות, אנא צור קשר עם {{ chatbot_config.contact_email }}</p>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="aboutDialog" class="dialog" aria-labelledby="aboutDialogTitle">
+  <div class="dialog-content">
+    <button class="close-button" aria-label="סגור">
+      <i class="fas fa-times"></i>
+    </button>
+    <h2 id="aboutDialogTitle">אודות {{ chatbot_config.name }}</h2>
+    <div class="dialog-body">
+      <p>{{ chatbot_config.description }}</p>
+      <p>גרסה: {{ chatbot_config.version }}</p>
+      <p>צור קשר:</p>
+      <p><a href="mailto:{{ chatbot_config.contact_email }}">{{ chatbot_config.contact_email }}</a></p>
+    </div>
+  </div>
+</dialog> 

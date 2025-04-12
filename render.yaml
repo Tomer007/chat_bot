@@ -1,9 +1,12 @@
 services:
   - type: web
-    name: buddy-budget
+    name: chat-bot
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: |
+      pip install -r requirements.txt
+      mkdir -p logs
+      chmod -R 777 logs
+    startCommand: gunicorn --workers 2 --timeout 120 --access-logfile - --error-logfile - 'app:app'
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -11,3 +14,11 @@ services:
         value: production
       - key: FLASK_APP
         value: app.py
+      - key: DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: INFO
+    disk:
+      name: app-logs
+      mountPath: /opt/render/project/src/logs
+      sizeGB: 1
