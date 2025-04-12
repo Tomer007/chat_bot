@@ -140,37 +140,81 @@ def setup_logger():
         '{"timestamp": "%(asctime)s", "logger": "%(name)s", "level": "%(levelname)s", "message": "%(message)s"}'
     )
     
-    # Create file handler for all logs
-    file_handler = RotatingFileHandler(
-        'logs/app.log', maxBytes=10485760, backupCount=5
-    )
-    file_handler.setLevel(logging.INFO)
-    file_handler.setFormatter(file_formatter)
-    
-    # Create file handler for errors
-    error_handler = RotatingFileHandler(
-        'logs/error.log', maxBytes=10485760, backupCount=5
-    )
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(file_formatter)
-    
-    # Create file handler for audit logs
-    audit_handler = RotatingFileHandler(
-        'logs/audit.log', maxBytes=10485760, backupCount=5
-    )
-    audit_handler.setLevel(AUDIT)
-    audit_handler.setFormatter(file_formatter)
-    
     # Create console handler with a different formatter
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(console_formatter)
     
-    # Add the handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(error_handler)
-    logger.addHandler(audit_handler)
-    logger.addHandler(console_handler)
+    # Check if we should prioritize stdout logging (for cloud environments like Render)
+    log_to_stdout = os.environ.get('LOG_TO_STDOUT', 'false').lower() == 'true'
+    is_production = os.environ.get('FLASK_ENV') == 'production'
+    
+    if log_to_stdout or is_production:
+        # In production or when explicitly requested, prioritize stdout logging
+        console_handler.setLevel(logging.DEBUG)
+        console_handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        ))
+        logger.addHandler(console_handler)
+        
+        # Log important startup information
+        print("=== Application started in production mode ===")
+        print(f"LOG_TO_STDOUT: {log_to_stdout}")
+        print(f"FLASK_ENV: {os.environ.get('FLASK_ENV', 'not set')}")
+        
+        # Only add file handlers if specifically needed in production
+        if os.environ.get('USE_FILE_LOGGING', 'false').lower() == 'true':
+            # Create file handlers only if explicitly requested
+            file_handler = RotatingFileHandler(
+                'logs/app.log', maxBytes=10485760, backupCount=5
+            )
+            file_handler.setLevel(logging.WARNING)  # Higher threshold for file logs
+            file_handler.setFormatter(file_formatter)
+            logger.addHandler(file_handler)
+            
+            error_handler = RotatingFileHandler(
+                'logs/error.log', maxBytes=10485760, backupCount=5
+            )
+            error_handler.setLevel(logging.ERROR)
+            error_handler.setFormatter(file_formatter)
+            logger.addHandler(error_handler)
+            
+            audit_handler = RotatingFileHandler(
+                'logs/audit.log', maxBytes=10485760, backupCount=5
+            )
+            audit_handler.setLevel(AUDIT)
+            audit_handler.setFormatter(file_formatter)
+            logger.addHandler(audit_handler)
+    else:
+        # For development, use both console and file logging
+        # Create file handler for all logs
+        file_handler = RotatingFileHandler(
+            'logs/app.log', maxBytes=10485760, backupCount=5
+        )
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(file_formatter)
+        
+        # Create file handler for errors
+        error_handler = RotatingFileHandler(
+            'logs/error.log', maxBytes=10485760, backupCount=5
+        )
+        error_handler.setLevel(logging.ERROR)
+        error_handler.setFormatter(file_formatter)
+        
+        # Create file handler for audit logs
+        audit_handler = RotatingFileHandler(
+            'logs/audit.log', maxBytes=10485760, backupCount=5
+        )
+        audit_handler.setLevel(AUDIT)
+        audit_handler.setFormatter(file_formatter)
+        
+        # Configure console handler for development
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(console_formatter)
+        
+        # Add the handlers to the logger
+        logger.addHandler(file_handler)
+        logger.addHandler(error_handler)
+        logger.addHandler(audit_handler)
+        logger.addHandler(console_handler)
     
     # Set specific module loggers
     # Silence some verbose loggers from dependencies
