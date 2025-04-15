@@ -19,12 +19,14 @@ export class ChatUI {
     this.userInput = document.getElementById('userInput');
     this.fileInput = document.getElementById('fileInput');
     this.uploadButton = document.getElementById('uploadButton');
+
+    // Add session check interval
+    this.setupSessionCheck();
   }
 
 
   init() {
     this.setupEventListeners();
-    this.setupSessionCheck();
     this.setupAutoResize();
     this.setupMenuItems();
     this.setupVoiceRecognition();
@@ -155,32 +157,26 @@ export class ChatUI {
         this.themeManager.toggleDarkMode();
         break;
       case 'logout':
-        window.location.href = '/logout';
+        window.location.href = '/auth/logout';
         break;
     }
   }
 
   setupSessionCheck() {
-    const CHECK_INTERVAL = 120000; // Check every 2 minutes
-
     const checkSession = () => {
-      $.ajax({
-        url: '/check_session',
-        type: 'GET',
-        success: (response) => {
-          if (response.status === 'expired') {
-            clearInterval(sessionCheckInterval);
-            window.location.href = '/login';
+      fetch('/auth/check_session')
+        .then(response => {
+          if (response.status === 403) {
+            window.location.href = '/auth/login';
           }
-        }
-      });
+        })
+        .catch(() => {
+          window.location.href = '/auth/login';
+        });
     };
 
-    // Initial check
-    checkSession();
-
-    // Set up interval for periodic checks
-    const sessionCheckInterval = setInterval(checkSession, CHECK_INTERVAL);
+    // Check session every 5 minutes
+    setInterval(checkSession, 300000);
   }
 
   setupAutoResize() {
@@ -449,85 +445,51 @@ export class ChatUI {
     const message = textarea.value.trim();
     const file = this.fileInput ? this.fileInput.files[0] : null;
 
-    // If no text and no file, do nothing
-    if (!message && !file) {
-      return;
-    }
-    
-    // Check if message is less than 3 characters (for all cases)
-    if (message.length < 3) {
-      this.showError('הודעה חייבת להכיל לפחות 3 תווים');
-      return;
-    }
+    if (!message && !file) return;
 
     // Disable input while sending
     textarea.disabled = true;
     const sendButton = document.getElementById('sendButton');
-    if (sendButton) {
-      sendButton.disabled = true;
-    }
+    if (sendButton) sendButton.disabled = true;
 
-    // Add user's message to chat (if text)
-    if (message) {
-      this.addMessage(message, 'user');
-    }
+    // Add user's message to chat
+    if (message) this.addMessage(message, 'user');
 
-    // Clear text input
+    // Clear input
     textarea.value = '';
     this.autoResize();
 
-    // Prepare form data to send both text & file in a single request
+    // Prepare form data
     const formData = new FormData();
     formData.append('message', message);
-    if (file) {
-      formData.append('file', file);
-    }
+    if (file) formData.append('file', file);
 
-    // Single-step request to your backend
-    $.ajax({
-      url: '/api/chat_upload',   // or your single combined endpoint
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      xhrFields: { withCredentials: true },
-
-      success: (response) => {
-        console.log('Response from server:', response);
-        if (response && response.success !== false && response.response) {
-             // Save the file info
-            this.uploadedFileContent = response.text;
-            this.attachedFileName = response.filename;
-
-           // Indicate that a file is attached
-          this.updateFileAttachmentIndicator();
-          // Show the bot's reply
-          this.addMessage(response.response, 'bot');
-        } else if (response.error) {
-          // If there's an error key
-          this.showError('שגיאה: ' + response.error);
-        } else {
-          this.showError('תשובה לא תקינה מהשרת');
-        }
-      },
-
-      error: (xhr, status, error) => {
-        console.error('Error sending data:', error);
-        this.showError('שגיאה בשליחת הבקשה. אנא נסה שוב.');
-      },
-
-      complete: () => {
-        // Re-enable input
-        textarea.disabled = false;
-        if (sendButton) {
-          sendButton.disabled = false;
-        }
-        // Clear file input after sending
-        if (this.fileInput) {
-          this.fileInput.value = '';
-        }
-        textarea.focus();
+    // Send request
+    fetch('/chat/input', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.status === 403) {
+        window.location.href = '/auth/login';
+        return;
       }
+      return response.json();
+    })
+    .then(response => {
+      if (response && response.message) {
+        this.addMessage(response.message, 'bot');
+      }
+    })
+    .catch(() => {
+      this.showError('שגיאה בשליחת ההודעה. אנא נסה שוב.');
+    })
+    .finally(() => {
+      // Re-enable input
+      textarea.disabled = false;
+      if (sendButton) sendButton.disabled = false;
+      if (this.fileInput) this.fileInput.value = '';
+      textarea.focus();
     });
   }
 
@@ -613,8 +575,8 @@ export class ChatUI {
     const formData = new FormData();
     formData.append('file', file);
 
-        $.ajax({
-      url: '/api/chat_upload',
+    $.ajax({
+      url: '/chat/upload',   // Updated endpoint URL
       type: 'POST',
       data: formData,
       processData: false,

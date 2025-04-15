@@ -6,6 +6,7 @@ import uuid
 from functools import wraps
 from logging.handlers import RotatingFileHandler
 from flask import request, g, session, has_request_context
+from app.config import LOG_FOLDER
 
 # Custom log levels
 AUDIT = 25  # Between WARNING (30) and INFO (20)
@@ -84,29 +85,39 @@ class ContextualLogger(logging.Logger):
         msg = self._add_context(msg)
         super().audit(msg, *args, **kwargs)
 
-# Performance tracking decorator
-def log_performance(logger=None):
-    """Decorator to log function execution time"""
+def log_performance(logger):
+    """Decorator to log function performance metrics"""
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if not logger:
-                log = logging.getLogger(func.__module__)
-            else:
-                log = logger
-                
             start_time = time.time()
-            result = func(*args, **kwargs)
-            end_time = time.time()
-            execution_time = (end_time - start_time) * 1000  # Convert to ms
             
-            log.debug(f"Performance: {func.__name__} executed in {execution_time:.2f}ms")
+            # Get function name and arguments for logging
+            func_name = func.__name__
+            arg_str = ', '.join([str(arg) for arg in args])
+            kwarg_str = ', '.join([f"{k}={v}" for k, v in kwargs.items()])
+            call_str = f"{func_name}({arg_str}{', ' if arg_str and kwarg_str else ''}{kwarg_str})"
             
-            # Log slow operations as warnings
-            if execution_time > 1000:  # More than 1 second
-                log.warning(f"Slow operation: {func.__name__} took {execution_time:.2f}ms to execute")
+            logger.debug(f"Starting {call_str}")
+            
+            try:
+                # Execute the function
+                result = func(*args, **kwargs)
                 
-            return result
+                # Calculate execution time
+                execution_time = (time.time() - start_time) * 1000  # Convert to milliseconds
+                
+                # Log success
+                logger.debug(f"Completed {func_name} in {execution_time:.2f}ms")
+                
+                return result
+                
+            except Exception as e:
+                # Log failure
+                execution_time = (time.time() - start_time) * 1000
+                logger.error(f"Failed {func_name} after {execution_time:.2f}ms: {str(e)}")
+                raise
+        
         return wrapper
     return decorator
 
@@ -119,10 +130,10 @@ def setup_logger():
     logging.setLoggerClass(ContextualLogger)
     
     # Create logs directory if it doesn't exist
-    os.makedirs('logs', exist_ok=True)
+    os.makedirs(LOG_FOLDER, exist_ok=True)
     
-    # Configure root logger
-    logger = logging.getLogger()
+    # Create a new logger instance
+    logger = logging.getLogger('app')
     logger.setLevel(logging.DEBUG)
     
     # Remove existing handlers to avoid duplicates when reloading
@@ -156,77 +167,67 @@ def setup_logger():
         logger.addHandler(console_handler)
         
         # Log important startup information
-        print("=== Application started in production mode ===")
-        print(f"LOG_TO_STDOUT: {log_to_stdout}")
-        print(f"FLASK_ENV: {os.environ.get('FLASK_ENV', 'not set')}")
+        logger.info("=== Application started in production mode ===")
+        logger.info(f"LOG_TO_STDOUT: {log_to_stdout}")
+        logger.info(f"FLASK_ENV: {os.environ.get('FLASK_ENV', 'not set')}")
         
         # Only add file handlers if specifically needed in production
         if os.environ.get('USE_FILE_LOGGING', 'false').lower() == 'true':
             # Create file handlers only if explicitly requested
             file_handler = RotatingFileHandler(
-                'logs/app.log', maxBytes=10485760, backupCount=5
+                os.path.join(LOG_FOLDER, 'app.log'), maxBytes=10485760, backupCount=5
             )
             file_handler.setLevel(logging.WARNING)  # Higher threshold for file logs
             file_handler.setFormatter(file_formatter)
             logger.addHandler(file_handler)
             
             error_handler = RotatingFileHandler(
-                'logs/error.log', maxBytes=10485760, backupCount=5
+                os.path.join(LOG_FOLDER, 'error.log'), maxBytes=10485760, backupCount=5
             )
             error_handler.setLevel(logging.ERROR)
             error_handler.setFormatter(file_formatter)
             logger.addHandler(error_handler)
             
             audit_handler = RotatingFileHandler(
-                'logs/audit.log', maxBytes=10485760, backupCount=5
+                os.path.join(LOG_FOLDER, 'audit.log'), maxBytes=10485760, backupCount=5
             )
             audit_handler.setLevel(AUDIT)
             audit_handler.setFormatter(file_formatter)
             logger.addHandler(audit_handler)
     else:
         # For development, use both console and file logging
-        # Create file handler for all logs
-        file_handler = RotatingFileHandler(
-            'logs/app.log', maxBytes=10485760, backupCount=5
-        )
-        file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(file_formatter)
+        console_handler.setLevel(logging.DEBUG)
+        console_handler.setFormatter(console_formatter)
+        logger.addHandler(console_handler)
         
-        # Create file handler for errors
+        # Add file handlers for development
+        file_handler = RotatingFileHandler(
+            os.path.join(LOG_FOLDER, 'app.log'), maxBytes=10485760, backupCount=5
+        )
+        file_handler.setLevel(logging.WARNING)
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+        
         error_handler = RotatingFileHandler(
-            'logs/error.log', maxBytes=10485760, backupCount=5
+            os.path.join(LOG_FOLDER, 'error.log'), maxBytes=10485760, backupCount=5
         )
         error_handler.setLevel(logging.ERROR)
         error_handler.setFormatter(file_formatter)
+        logger.addHandler(error_handler)
         
-        # Create file handler for audit logs
         audit_handler = RotatingFileHandler(
-            'logs/audit.log', maxBytes=10485760, backupCount=5
+            os.path.join(LOG_FOLDER, 'audit.log'), maxBytes=10485760, backupCount=5
         )
         audit_handler.setLevel(AUDIT)
         audit_handler.setFormatter(file_formatter)
-        
-        # Configure console handler for development
-        console_handler.setLevel(logging.INFO)
-        console_handler.setFormatter(console_formatter)
-        
-        # Add the handlers to the logger
-        logger.addHandler(file_handler)
-        logger.addHandler(error_handler)
         logger.addHandler(audit_handler)
-        logger.addHandler(console_handler)
-    
-    # Set specific module loggers
-    # Silence some verbose loggers from dependencies
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)
-    logging.getLogger('urllib3').setLevel(logging.WARNING)
     
     return logger
+
+# Create and configure the logger
+logger = setup_logger()
 
 # Function to generate a unique request ID
 def generate_request_id():
     """Generate a unique request ID"""
-    return str(uuid.uuid4())
-
-# Create and configure logger
-logger = setup_logger() 
+    return str(uuid.uuid4()) 

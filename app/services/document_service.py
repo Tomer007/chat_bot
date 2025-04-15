@@ -3,15 +3,26 @@ import io
 import os
 import tempfile
 import traceback
-
+import PyPDF2
 import docx
+from werkzeug.utils import secure_filename
+from datetime import datetime
+
 import pdfplumber
 from docx import Document
 from langchain.schema import Document as LangChainDoc
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from werkzeug.utils import secure_filename
 
 from app.utils.logging_config import logger, log_performance
+from app.config import UPLOAD_FOLDER
+
+# Try to import textract but don't fail if not available
+try:
+    import textract
+    TEXTRACT_AVAILABLE = True
+except ImportError:
+    TEXTRACT_AVAILABLE = False
+    print("Warning: textract not available. Some document formats may not be fully supported.")
 
 
 @log_performance(logger)
@@ -20,145 +31,54 @@ def extract_text_from_file(file):
     Extract text content from various file types (PDF, DOCX, TXT, CSV).
     Returns the extracted text as a string.
     """
-    filename = secure_filename(file.filename)
-    file_ext = os.path.splitext(filename)[1].lower()
-    file_size = 0
+    filename = file.filename.lower()
+    file_content = ""
     
     try:
-        # Get file size if available
-        file.seek(0, os.SEEK_END)
-        file_size = file.tell()
-        file.seek(0)  # Reset file pointer
-    except:
-        # If we can't get file size, continue without it
-        pass
-    
-    logger.info(f"Extracting text from file: {filename} (type: {file_ext}, size: {file_size/1024:.2f}KB)")
-
-    # ----- PDF Handling -----
-    if file_ext == '.pdf':
-        temp_file_path = None
-        try:
-            # 1) Save the uploaded PDF to a temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-                file.save(tmp.name)
-                temp_file_path = tmp.name
-                logger.debug(f"Saved PDF to temporary file: {temp_file_path}")
-
-            # 2) Open and read the PDF using pdfplumber
-            extracted_text = ""
-            total_pages = 0
-            empty_pages = 0
-            
-            with pdfplumber.open(temp_file_path) as doc:
-                total_pages = len(doc.pages)
-                for page_num, page in enumerate(doc.pages, 1):
-                    page_text = page.extract_text()
-                    if page_text:
-                        extracted_text += page_text + "\n"
-                        logger.debug(f"Processed PDF page {page_num}/{total_pages} - {len(page_text)} chars")
-                    else:
-                        empty_pages += 1
-                        logger.debug(f"Processed PDF page {page_num}/{total_pages} - Empty page")
-            
-            # Log statistics about PDF extraction
-            logger.info(f"Successfully extracted PDF: {len(extracted_text)} chars, {total_pages} pages ({empty_pages} empty)")
-            return extracted_text
-
-        except Exception as e:
-            error_details = traceback.format_exc()
-            logger.error(f"PDF extraction error: {str(e)}\n{error_details}")
-            raise
-        finally:
-            # 3) Clean up the temp file
-            if temp_file_path and os.path.exists(temp_file_path):
-                os.remove(temp_file_path)
-                logger.debug(f"Removed temporary PDF file: {temp_file_path}")
-
-    # ----- DOCX Handling -----
-    elif file_ext == '.docx':
-        try:
-            doc = docx.Document(io.BytesIO(file.read()))
-            total_paragraphs = len(doc.paragraphs)
-            empty_paragraphs = 0
-            paragraphs = []
-            
-            for i, paragraph in enumerate(doc.paragraphs):
-                if paragraph.text.strip():
-                    paragraphs.append(paragraph.text)
-                else:
-                    empty_paragraphs += 1
-            
-            extracted_text = "\n".join(paragraphs)
-            logger.info(f"Successfully extracted DOCX: {len(extracted_text)} chars, {total_paragraphs} paragraphs ({empty_paragraphs} empty)")
-            return extracted_text
-        except Exception as e:
-            error_details = traceback.format_exc()
-            logger.error(f"DOCX extraction error: {str(e)}\n{error_details}")
-            raise
-
-    # ----- TXT Handling -----
-    elif file_ext == '.txt':
-        try:
-            # Attempt UTF-8 first, fall back to other encodings if needed
-            content = None
-            encodings = ['utf-8', 'latin-1', 'cp1252']
-            
-            for encoding in encodings:
-                try:
-                    file.seek(0)  # Reset file pointer
-                    content = file.read().decode(encoding)
-                    logger.debug(f"Successfully decoded TXT with {encoding} encoding")
-                    break
-                except UnicodeDecodeError:
-                    logger.debug(f"Failed to decode TXT with {encoding} encoding, trying next")
-                    continue
-            
-            if content is None:
-                # If all encodings failed, use replace mode with utf-8
-                file.seek(0)
-                content = file.read().decode('utf-8', errors='replace')
-                logger.warning("TXT file decoded with replacement characters due to encoding issues")
+        # Handle PDF files
+        if filename.endswith('.pdf'):
+            logger.info(f"Processing PDF file: {filename}")
+            pdf_reader = PyPDF2.PdfReader(file)
+            for page_num in range(len(pdf_reader.pages)):
+                page = pdf_reader.pages[page_num]
+                file_content += page.extract_text() + "\n"
                 
-            # Count lines and words
-            line_count = content.count('\n') + 1
-            word_count = len(content.split())
+        # Handle Word documents
+        elif filename.endswith('.docx'):
+            logger.info(f"Processing DOCX file: {filename}")
+            doc = docx.Document(file)
+            for para in doc.paragraphs:
+                file_content += para.text + "\n"
+                
+        # Handle TXT files
+        elif filename.endswith('.txt'):
+            logger.info(f"Processing TXT file: {filename}")
+            file_content = file.read().decode('utf-8')
             
-            logger.info(f"Successfully extracted TXT: {len(content)} chars, {line_count} lines, {word_count} words")
-            return content
-        except Exception as e:
-            error_details = traceback.format_exc()
-            logger.error(f"TXT extraction error: {str(e)}\n{error_details}")
-            raise
-
-    # ----- CSV Handling -----
-    elif file_ext == '.csv':
-        try:
-            content = file.read().decode('utf-8', errors='replace')
-            row_count = 0
-            col_count = 0
+        # Try textract for other file types if available
+        else:
+            logger.info(f"Using textract for file: {filename}")
+            # Save temporarily to process with textract
+            temp_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+            file.save(temp_path)
+            if TEXTRACT_AVAILABLE:
+                try:
+                    file_content = textract.process(temp_path).decode('utf-8')
+                except Exception as e:
+                    print(f"Error using textract: {str(e)}")
+                    file_content = f"Could not extract text from {filename}. Unsupported file format."
+            else:
+                file_content = f"Could not extract text from {filename}. Textract not available for this file format."
             
-            # Parse CSV to get row and column counts
-            csv_reader = csv.reader(io.StringIO(content))
-            rows = list(csv_reader)
-            row_count = len(rows)
-            if row_count > 0:
-                col_count = len(rows[0])
-            
-            # Create the extracted text
-            extracted_text = "\n".join([",".join(row) for row in rows])
-            
-            logger.info(f"Successfully extracted CSV: {len(extracted_text)} chars, {row_count} rows, {col_count} columns")
-            return extracted_text
-        except Exception as e:
-            error_details = traceback.format_exc()
-            logger.error(f"CSV extraction error: {str(e)}\n{error_details}")
-            raise
-
-    else:
-        error_msg = f"Unsupported file extension: {file_ext}"
-        logger.error(error_msg)
-        raise ValueError(error_msg)
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+                
+        return file_content.strip()
+        
+    except Exception as e:
+        logger.error(f"Error extracting text from {filename}: {str(e)}")
+        return f"Error extracting text: {str(e)}"
 
 
 @log_performance(logger)
@@ -233,4 +153,52 @@ def load_and_chunk_document(file_path: str, chunk_size: int = 1500, chunk_overla
         logger.debug(f"Chunk {i+1}/{len(doc_chunks)}: {len(chunk.page_content)} chars")
     
     # Return all chunks
-    return doc_chunks 
+    return doc_chunks
+
+
+def process_uploaded_file(file):
+    """Process an uploaded file, extract text, and return file information"""
+    if not file or not file.filename:
+        return {}, ""
+        
+    try:
+        # Get basic file information
+        filename = secure_filename(file.filename)
+        file_extension = os.path.splitext(filename)[1].lower()
+        file_size = 0
+        
+        # Create upload folder if it doesn't exist
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+            
+        # Save the file temporarily to get its size and process it
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+        file_size = os.path.getsize(file_path)
+        
+        # Extract text content
+        file.seek(0)  # Reset file pointer
+        text_content = extract_text_from_file(file)
+        
+        # Prepare file info dictionary
+        file_info = {
+            'filename': filename,
+            'size': file_size,
+            'type': file_extension,
+            'uploaded_at': datetime.now().isoformat(),
+            'text_length': len(text_content) if text_content else 0
+        }
+        
+        # Log the file processing
+        logger.info(f"Processed file: {filename}, size: {file_size} bytes, extracted text: {len(text_content)} chars")
+        
+        # Clean up temporary file if needed
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            
+        return file_info, text_content
+        
+    except Exception as e:
+        error_message = f"Error processing file {file.filename if file else 'unknown'}: {str(e)}"
+        logger.error(error_message)
+        return {'error': error_message}, "" 

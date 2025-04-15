@@ -1,3 +1,0 @@
-This is the default content for the RAG system.
-It will be used as a reference for the chatbot's responses.
-You can update this content with your specific information.

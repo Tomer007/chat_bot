@@ -1,118 +1,50 @@
 import os
-import time
-import traceback
-from flask import Flask, g, request, session, current_app
-from flask_cors import CORS
+from flask import Flask, request, session, redirect, url_for
 from dotenv import load_dotenv
+from flask_session import Session
 
-from app.config import SECRET_KEY, SESSION_LIFETIME, DEBUG, PORT
-from app.routes import register_blueprints
-from app.utils.logging_config import logger, generate_request_id
+from app.config import SECRET_KEY, DEBUG, PORT, Config
 
-def create_app(test_config=None):
+def create_app(config_class=Config):
     """Create and configure the Flask application"""
     # Load environment variables
     load_dotenv()
     
-    # Log startup information - outside of request context
-    logger.info("Starting Chat+Bot application")
-    
     # Create Flask app
     app = Flask(__name__, 
-                template_folder='../templates',
-                static_folder='../static')
+                template_folder=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates'),
+                static_folder=os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static'))
     
-    # Configure app
+    # Basic configuration
     app.secret_key = SECRET_KEY
-    app.config['PERMANENT_SESSION_LIFETIME'] = SESSION_LIFETIME
     app.config['DEBUG'] = DEBUG
     
-    logger.info(f"App configured with DEBUG={DEBUG}")
+    # Simple session config
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_FILE_DIR'] = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'sessions')
+    os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
     
-    # Enable CORS
-    CORS(app)
-    
-    # Add request logging middleware
-    @app.before_request
-    def before_request():
-        # Skip for static files
-        if request.path.startswith('/static'):
-            return
-            
-        # Assign a unique request ID
-        g.request_id = generate_request_id()
-        g.start_time = time.time()
-        
-        # Get username if available in session
-        username = session.get('user_id', 'anonymous')
-        
-        # Log the incoming request
-        logger.info(f"Request started: {request.method} {request.path}")
-    
-    @app.after_request
-    def after_request(response):
-        # Skip logging for static files
-        if request.path.startswith('/static'):
-            return response
-            
-        try:
-            # Calculate request duration
-            duration = time.time() - g.get('start_time', time.time())
-            duration_ms = round(duration * 1000, 2)
-            
-            # Log request completion with status code and duration
-            logger.info(f"Request completed: {request.method} {request.path} - Status: {response.status_code} - Duration: {duration_ms}ms")
-            
-            # Log warning for slow requests
-            if duration_ms > 1000:
-                logger.warning(f"Slow request: {request.method} {request.path} took {duration_ms}ms")
-        except Exception as e:
-            # Don't let logging errors break the response
-            logger.error(f"Error in after_request: {str(e)}")
-            
-        return response
-    
-    @app.teardown_request
-    def teardown_request(exception=None):
-        if exception:
-            # Get full exception details
-            error_details = traceback.format_exc()
-            logger.error(f"Request failed with exception: {str(exception)}")
-            logger.error(f"Stack trace: {error_details}")
-    
-    @app.errorhandler(404)
-    def handle_not_found(e):
-        """Handle 404 errors with appropriate logging level based on the requested path"""
-        # Common files that browsers request automatically - log at INFO level only
-        common_missing_files = ['/favicon.ico', '/apple-touch-icon.png', '/robots.txt']
-        
-        if request.path in common_missing_files:
-            # Log these common 404s at INFO level instead of ERROR
-            logger.info(f"Common 404: {request.path} - Not found but expected")
-            return {"error": "Not found"}, 404
-        else:
-            # Log other 404s at WARNING level
-            logger.warning(f"404 Not Found: {request.path}")
-            return {"error": "The requested resource was not found"}, 404
-    
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        # Log any unhandled exceptions
-        error_details = traceback.format_exc()
-        logger.error(f"Unhandled exception: {str(e)}")
-        logger.error(f"Stack trace: {error_details}")
-        
-        # Return a generic error response
-        return {"error": "An unexpected error occurred"}, 500
-    
-    # Simple favicon route to avoid 404 errors
-    @app.route('/favicon.ico')
-    def favicon():
-        return app.send_static_file('favicon.ico')
+    # Initialize session
+    Session(app)
     
     # Register blueprints
-    register_blueprints(app)
-    logger.info("Blueprints registered")
+    from app.routes.chat import chat_bp
+    from app.routes.auth import auth_bp
+    
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(chat_bp, url_prefix='/chat')
+    
+    # Root route
+    @app.route('/')
+    def index():
+        if 'user_id' not in session:
+            return redirect(url_for('auth.login'))
+        return redirect(url_for('chat.index'))
+    
+    # Redirect /login to /auth/login for convenience
+    @app.route('/login')
+    def login_redirect():
+        return redirect(url_for('auth.login'))
     
     return app
 
@@ -121,9 +53,4 @@ app = create_app()
 
 def run_app():
     """Run the Flask application"""
-    try:
-        logger.info(f"Starting server on port {PORT}")
-        app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
-    except Exception as e:
-        logger.error(f"Failed to start server: {str(e)}")
-        logger.error(traceback.format_exc())
+    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)

@@ -1,27 +1,13 @@
 chatbots:
-  default:
-    name: "Default Chatbot"
-    title: "Expert Assistant"
-    description: "Generic chat bot"
-    welcome_message: "Hello! How can I help you today?"
-    contact_email: "tomergur@gmail.com"
-    version: "1.0.0"
-  chatbot_Many:
-    name: "מני"
-    title: "המאמן שלך להגדלת הכנסות ללא סיכון"
-    description: "אני כאן כדי לעזור לך לזהות חסמים ולהדריך אותך בדרך להגדלת ההכנסות שלך."
-    welcome_message: |
-      שלום! אני מני, המאמן האישי שלך להגדלת הכנסות ללא סיכון.
-      אני כאן כדי לעזור לך לזהות חסמים ולהדריך אותך בדרך להגדלת ההכנסות שלך.
-      איך אוכל לעזור לך היום?
-    contact_email: "tomergur@gmail.com"
-    version: "1.0.0"
   chatbot_PDN:
-      name: "PDN"
-      title: "המאמן שלך למציאת הצופן שלך בשיטת PDN"
-      description: "אני כאן כדי לעזור לך למציאת הצופן שלך."
-      welcome_message: |
-        שלום! אני PDN, המדריך האישי שלך למציאת הצופן שלך
-        איך אוכל לעזור לך היום?
-      contact_email: "tomergur@gmail.com"
-      version: "1.0.0"
+    name: "PDN"
+    title: "המאמן שלך למציאת הצופן שלך בשיטת PDN"
+    description: "אני כאן כדי לעזור לך למציאת הצופן שלך."
+    welcome_message: |
+      שלום! אני PDN – המדריך האישי שלך לגילוי הצופן הייחודי שטמון בך.  
+      יחד נצא למסע מרתק שבו נגלה 💡 את הכוחות שמניעים אותך.   
+      את סגנון הפעולה שלך.   
+      ואת הקוד 🧬 שיגלה מי אתה באמת.   
+      מוכן/ה להתחיל? 
+    contact_email: "tomergur@gmail.com"
+    version: "1.0.0"

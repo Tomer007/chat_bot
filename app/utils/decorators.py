@@ -1,7 +1,7 @@
 from functools import wraps
-from flask import session, redirect, url_for
-
+from flask import session, redirect, url_for, request, jsonify
 from app.utils.logging_config import logger
+import time
 
 def login_required(f):
     """
@@ -10,11 +10,11 @@ def login_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            logger.warning(f"Unauthorized access attempt to {f.__name__}")
+        if not session.get('authenticated'):
+            if request.is_json:
+                return jsonify({'authenticated': False}), 403
             return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
-
     return decorated_function
 
 def admin_required(f):

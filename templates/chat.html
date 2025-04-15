@@ -37,6 +37,12 @@
       background-color: #0056b3;
     }
 
+    /* Style for welcome message to display line breaks properly */
+    .welcome-message {
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
 
 
 
@@ -79,7 +85,7 @@
     <main class="chat-main">
         <div id="chatBox" class="chat-box">
             <div class="message bot">
-                {{ chatbot_config.welcome_message | safe }}
+                <div class="welcome-message">{{ chatbot_config.welcome_message | safe }}</div>
                 <div class="timestamp">Just now</div>
             </div>
         </div>
