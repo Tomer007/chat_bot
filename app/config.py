@@ -1,6 +1,7 @@
 import os
-import yaml
 from datetime import timedelta
+
+import yaml
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -84,6 +85,7 @@ SESSION_LIFETIME = timedelta(seconds=SESSION_LIFETIME_SECONDS)
 # Document paths
 RAG_FILE = os.getenv("RAG_FILE", "doc/rag_content.txt")
 
+
 # Chatbot configuration
 def load_chatbot_config():
     # Try multiple possible locations for the config file
@@ -93,13 +95,13 @@ def load_chatbot_config():
         'config/chatbot_config.yaml',
         'chatbot_config.yaml'
     ]
-    
+
     config_path = None
     for path in possible_paths:
         if os.path.exists(path):
             config_path = path
             break
-    
+
     if not config_path:
         print(f"Warning: Could not find chatbot_config.yaml in any of the expected locations")
         return {"name": "Default Chat Bot", "description": "A default chatbot configuration"}
@@ -126,33 +128,36 @@ def load_chatbot_config():
 
     return chosen_config
 
+
 # Load chatbot configuration
 CHATBOT_CONFIG = load_chatbot_config()
+
 
 class Config:
     """Base configuration class."""
     # Flask configuration
     SECRET_KEY = SECRET_KEY
     DEBUG = DEBUG
-    
+
     # OpenAI API configuration
     OPENAI_API_KEY = OPENAI_API_KEY
-    
+
     # Flask-Session configuration
     SESSION_TYPE = 'filesystem'  # Store sessions in the filesystem
     SESSION_PERMANENT = True
     PERMANENT_SESSION_LIFETIME = SESSION_LIFETIME
     SESSION_FILE_DIR = SESSION_FILE_DIR
     SESSION_USE_SIGNER = True  # Sign the session cookie
-    
+
     # Ensure session directory exists
     os.makedirs(SESSION_FILE_DIR, exist_ok=True)
+
 
 class TestConfig(Config):
     """Test configuration class."""
     TESTING = True
     DEBUG = True
-    
+
     # Use in-memory server for testing
     SESSION_TYPE = 'redis'  # Use Redis for tests
-    SESSION_REDIS = 'redis://localhost:6379/0' 
+    SESSION_REDIS = 'redis://localhost:6379/0'

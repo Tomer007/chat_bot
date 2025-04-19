@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDN Personality Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <style>
+    :root {
+      --primary-color: #4a90e2;
+      --secondary-color: #2c3e50;
+      --accent-color: #e74c3c;
+      --text-color: #333;
+      --light-bg: #f5f6fa;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      background-color: var(--light-bg);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .report-header {
+      text-align: center;
+      padding: 3rem 0;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .report-subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .report-section {
+      background: #eaf6ff;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .markdown-body {
+      background: #eaf6ff;
+      box-sizing: border-box;
+      min-width: 200px;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .download-button {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 2rem;
+      transition: background-color 0.3s;
+    }
+
+    .download-button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .container {
+        padding: 0;
+      }
+      .download-button {
+        display: none;
+      }
+    }
+
+    [dir="rtl"] {
+      direction: rtl;
+      text-align: right;
+    }
+
+  .markdown-body h1 {
+  font-size: 2.2rem;
+  color: #4a90e2;
+  margin-top: 2rem;
+  border-bottom: 2px solid #d0e4ff;
+  padding-bottom: 0.5rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.6rem;
+  color: #e74c3c;
+  margin-top: 2rem;
+  border-left: 4px solid #e74c3c;
+  padding-left: 1rem;
+}
+
+.markdown-body p {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+.markdown-body ul {
+  padding-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.8rem;
+}
+
+.markdown-body strong {
+  color: #2c3e50;
+}
+
+.markdown-body em {
+  color: #8e44ad;
+}
+
+.markdown-body blockquote {
+  border-left: 5px solid #ccc;
+  padding-left: 1rem;
+  color: #555;
+  font-style: italic;
+  background-color: #f9f9f9;
+  margin: 1.5rem 0;
+}
+
+.markdown-body hr {
+  border: 0;
+  height: 1px;
+  background: #ccc;
+  margin: 2rem 0;
+}
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="report-header">
+        <h1 class="report-title">PDN Personality Assessment Report</h1>
+    </div>
+
+    <div class="report-section">
+        <article class="markdown-body" {% if is_rtl %}dir="rtl" {% endif %}>
+            {{ report_content | safe }}
+        </article>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="{{ url_for('chat.download_report') }}" class="download-button">
+            {% if is_rtl %}
+            הורד דוח PDF
+            {% else %}
+            Download PDF Report
+            {% endif %}
+        </a>
+    </div>
+</div>
+</body>
+</html>

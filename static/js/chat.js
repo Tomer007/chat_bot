@@ -465,7 +465,7 @@ export class ChatUI {
     if (file) formData.append('file', file);
 
     // Send request
-    fetch('/chat/input', {
+    fetch('/chat/send_message', {
       method: 'POST',
       body: formData
     })
@@ -477,10 +477,27 @@ export class ChatUI {
       return response.json();
     })
     .then(response => {
-      if (response && response.message) {
-        this.addMessage(response.message, 'bot');
-      }
-    })
+  if (!response) return;
+
+  if (response.status === 'redirect' && response.redirect_url) {
+    console.log("redirecting to " + response.redirect_url);
+    // Optional: show a message before redirect
+    if (response.message) {
+        this.showSuccess("Generating PDN Report."); // or use this.addMessage(...) if you'd rather display in chat
+    }
+
+    // Wait 1.5 seconds to let user see the message
+    setTimeout(() => {
+      window.location.href = response.redirect_url;
+    }, 3000);
+
+    return;
+  }
+
+  if (response.message) {
+    this.addMessage(response.message, 'bot');
+  }
+})
     .catch(() => {
       this.showError('שגיאה בשליחת ההודעה. אנא נסה שוב.');
     })

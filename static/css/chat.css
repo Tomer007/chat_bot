@@ -18,7 +18,7 @@
 
 /* ===== HEADER ===== */
 .chat-header {
-  background: var(--header-bg);
+  background: #007bff;
   color: #fff;
   padding: 16px 20px;
   text-align: center;
@@ -31,13 +31,11 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.chat-header h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
-  margin: 0;
-  text-align: center;
-  flex: 1;
-}
+header h1 {
+      flex: 1;
+      text-align: center;
+      margin: 0;
+    }
 
 /* ===== CHAT BOX ===== */
 .chat-box {
@@ -71,7 +69,7 @@
   margin-bottom: 10px;
   padding: 15px 20px;
   border-radius: 18px;
-  max-width: 80%;
+  max-width: 50%;
   word-wrap: break-word;
   opacity: 0;
   animation: fadeIn 0.4s forwards;
@@ -138,10 +136,10 @@
 .input-wrapper {
   width: 100%;
   max-width: none;
-  margin: 0;
+  margin: 10;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 16px;
   padding: 0;
 }
 

@@ -1,0 +1,278 @@
+{
+  "session_id": "8f64fd3475fbe29c",
+  "user": {
+    "username": "Morning@gmail.com"
+  },
+  "started_at": "2025-04-19 16:04:06",
+  "last_updated": "2025-04-19 16:04:36",
+  "current_stage": {
+    "id": "final",
+    "name": "Final Code Reveal",
+    "description": "Summary and personality code revelation",
+    "next": null
+  },
+  "assessment_data": {
+    "stage_complete": "reinforcement",
+    "final_report": "# PDN Code Report\n\n**Name of the Diagnosed:** [Name from History]  \n**Date:** [Today's Date]\n\n---\n\n## Core Formula Overview\n\n- **Main Channel:** Pleasure  \n- **Energy Type:** Dynamic  \n- **Primary Role:** P10  \n- **Code Name:** \"The Givers\"  \n- **Crown Jewel:** \"Abundance and Giving\"  \n- **Full Code & Life Mission:** P10 – T4 – E5 | Destiny Code: A3\n\n---\n\n## Internal Navigation (PDN as Inner Waze)\n\nYour PDN serves as a guiding star, illuminating the path that aligns with your deepest essence and soul’s purpose. It reveals your innate gifts and the unique way you bring light into the world. As \"The Giver,\" you are driven by a profound sense of abundance and a desire to share joy and belonging with others. Your journey is one of creating connections and fostering generosity.\n\n---\n\n## Main Engine – P10 (50%)\n\nYour primary gift is \"Abundance and Giving.\" You operate at your best when you are sharing your resources, whether they are material, emotional, or spiritual. Your internal strengths lie in your ability to create a nurturing environment where everyone feels valued. However, your root fear is the feeling of rejection or not being appreciated for your contributions. The driving question in your life is, \"How can I give more?\" Your core needs and values revolve around connection, appreciation, and the joy of giving.\n\n---\n\n## Secondary Engine – T4 (30%)\n\nYour \"Protection and Stability\" energy manifests in your role as a supporter within your family and community. It provides a steady foundation that supports your primary mission. You naturally create safe spaces for others to thrive, offering them a sense of security and steadfastness that enhances your giving nature.\n\n---\n\n## Tertiary Engine – E5 (20%)\n\nWith \"Quiet Leadership\" energy, you lead through presence and empathy. Your calm influence allows you to guide others gently, instilling confidence and trust. Your ability to listen and understand deeply makes you a beacon of support and guidance for those around you.\n\n---\n\n## Life Mission (A3)\n\nYour life mission is to bring Success, Communication, and Hope into the world. By balancing your three engines, you cultivate environments where these elements can flourish. Your dynamic energy and empathetic nature enable you to communicate effectively, inspiring hope and driving others toward success.\n\n---\n\n## Crown Jewel – Her Higher Purpose\n\nYour higher purpose is to embody \"Abundance and Giving.\" You are here to leave a legacy of generosity and joy, enriching the lives of those you touch. Through your actions, you remind the world that true wealth lies in the sharing of our gifts and the connections we foster.\n\n---\n\n## Core Strengths (Gems)\n\n- High execution capacity\n- Emotional intelligence\n- Harmony in teams\n- Inner calm and focus\n- Passion for building and sharing\n\n---\n\n## Magic Words (Her Inner Language)\n\nEmbrace these keywords as your personal compass: abundance, joy, fruit, giving, beauty, home, empathy. Let them guide your decisions and interactions, aligning you with your true self.\n\n---\n\n## Practical Applications (Recommended Directions)\n\nYou thrive in environments where your gifts can shine. Consider career paths in social entrepreneurship, project management, or coaching. These fields allow you to leverage your strengths in giving, stability, and leadership, creating impactful change.\n\n---\n\n## Final Inspirational Message\n\nRemember, your heart and talents are equally powerful. You possess a unique ability to transform the world with your generosity and compassion. Embrace your role as \"The Giver,\" knowing that your contributions are invaluable and your presence brings light and hope to those around you."
+  },
+  "stages": {
+    "personality": {
+      "started_at": "2025-04-19 16:04:06",
+      "messages": [
+        {
+          "role": "user",
+          "content": "yes",
+          "timestamp": "2025-04-19 16:03:58"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's dive into the first question.\n\n**What describes you more?**\n1️ I like to observe and think it through  \n2️ I like to jump in and figure it out  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:03:59"
+        },
+        {
+          "role": "user",
+          "content": "2",
+          "timestamp": "2025-04-19 16:04:03"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Here's the next one:\n\n**What feels more like you?**  \nAre you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:04:04"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! 😊\n\n****",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Let's dive into your personality discovery journey! 🎉\n\nHere's the first question:\n\nWhen someone shares a different opinion, how do you usually respond?  \n1️⃣ I tend to argue my point  \n2️⃣ I tend to agree or let it go  \n\nJust type 1 or 2 to let me know! 😊",
+          "timestamp": "2025-04-19 16:04:07"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:08"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Here's the next question for you:\n\nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type 1 or 2! 😊",
+          "timestamp": "2025-04-19 16:04:09"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:10"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! Let's keep this fun journey going.\n\n****",
+          "timestamp": "2025-04-19 16:04:11"
+        }
+      ],
+      "completed_at": "2025-04-19 16:04:11"
+    },
+    "energy": {
+      "started_at": "2025-04-19 16:04:11",
+      "messages": [
+        {
+          "role": "user",
+          "content": "yes",
+          "timestamp": "2025-04-19 16:03:58"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's dive into the first question.\n\n**What describes you more?**\n1️ I like to observe and think it through  \n2️ I like to jump in and figure it out  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:03:59"
+        },
+        {
+          "role": "user",
+          "content": "2",
+          "timestamp": "2025-04-19 16:04:03"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Here's the next one:\n\n**What feels more like you?**  \nAre you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:04:04"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! 😊\n\n****",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Let's dive into your personality discovery journey! 🎉\n\nHere's the first question:\n\nWhen someone shares a different opinion, how do you usually respond?  \n1️⃣ I tend to argue my point  \n2️⃣ I tend to agree or let it go  \n\nJust type 1 or 2 to let me know! 😊",
+          "timestamp": "2025-04-19 16:04:07"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:08"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Here's the next question for you:\n\nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type 1 or 2! 😊",
+          "timestamp": "2025-04-19 16:04:09"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:10"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! Let's keep this fun journey going.\n\n****",
+          "timestamp": "2025-04-19 16:04:11"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! 🎉 Let's dive into discovering your unique energy expression style. Here we go with the first question:\n\n### Question 5:\nPlease rank the following three options based on how well they describe you:\n\n**Choose:**\n- **1️ Most accurate**\n- **2️ Less accurate**\n- **3️ Least accurate**\n\n**I usually find myself:**\n\n**A️** - Constantly active, finishing one task and moving straight to the next  \n**B️** - Moving at my own pace, following a pre-planned schedule  \n**C️** - Acting as needed, flexibly and on demand  \n\n🔡 Type your ranking using letters only (e.g. A, B, C)",
+          "timestamp": "2025-04-19 16:04:13"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:15"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Let's move on to the next question:\n\n### Question 2:\nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**",
+          "timestamp": "2025-04-19 16:04:16"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:17"
+        },
+        {
+          "role": "assistant",
+          "content": "Fantastic! Thanks for sharing your thoughts. 🌟\n\nNow that we have a glimpse into your style, we'll move on to the next stage of your personality discovery journey.\n\n****",
+          "timestamp": "2025-04-19 16:04:18"
+        }
+      ],
+      "completed_at": "2025-04-19 16:04:18"
+    },
+    "reinforcement": {
+      "started_at": "2025-04-19 16:04:18",
+      "messages": [
+        {
+          "role": "user",
+          "content": "yes",
+          "timestamp": "2025-04-19 16:03:58"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's dive into the first question.\n\n**What describes you more?**\n1️ I like to observe and think it through  \n2️ I like to jump in and figure it out  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:03:59"
+        },
+        {
+          "role": "user",
+          "content": "2",
+          "timestamp": "2025-04-19 16:04:03"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Here's the next one:\n\n**What feels more like you?**  \nAre you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**.",
+          "timestamp": "2025-04-19 16:04:04"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! 😊\n\n****",
+          "timestamp": "2025-04-19 16:04:06"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Let's dive into your personality discovery journey! 🎉\n\nHere's the first question:\n\nWhen someone shares a different opinion, how do you usually respond?  \n1️⃣ I tend to argue my point  \n2️⃣ I tend to agree or let it go  \n\nJust type 1 or 2 to let me know! 😊",
+          "timestamp": "2025-04-19 16:04:07"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:08"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Here's the next question for you:\n\nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type 1 or 2! 😊",
+          "timestamp": "2025-04-19 16:04:09"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:10"
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, thanks for sharing! Let's keep this fun journey going.\n\n****",
+          "timestamp": "2025-04-19 16:04:11"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! 🎉 Let's dive into discovering your unique energy expression style. Here we go with the first question:\n\n### Question 5:\nPlease rank the following three options based on how well they describe you:\n\n**Choose:**\n- **1️ Most accurate**\n- **2️ Less accurate**\n- **3️ Least accurate**\n\n**I usually find myself:**\n\n**A️** - Constantly active, finishing one task and moving straight to the next  \n**B️** - Moving at my own pace, following a pre-planned schedule  \n**C️** - Acting as needed, flexibly and on demand  \n\n🔡 Type your ranking using letters only (e.g. A, B, C)",
+          "timestamp": "2025-04-19 16:04:13"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:15"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome! Let's move on to the next question:\n\n### Question 2:\nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**",
+          "timestamp": "2025-04-19 16:04:16"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:17"
+        },
+        {
+          "role": "assistant",
+          "content": "Fantastic! Thanks for sharing your thoughts. 🌟\n\nNow that we have a glimpse into your style, we'll move on to the next stage of your personality discovery journey.\n\n****",
+          "timestamp": "2025-04-19 16:04:18"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Let's dive into this fun exploration! 😊\n\n**Question 7:**\nWhat fits you more?\n1️⃣ I openly share  \n2️⃣ I’m highly private  \n\nJust type **1** or **2** to let me know!",
+          "timestamp": "2025-04-19 16:04:20"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:24"
+        },
+        {
+          "role": "assistant",
+          "content": "Awesome, thanks for sharing that! 🌟\n\n**Question 2:**  \nWhat feels more like you? Are you more calculated or spontaneous?  \n1️⃣ Spontaneous  \n2️⃣ Calculated  \n\nJust type **1** or **2**!",
+          "timestamp": "2025-04-19 16:04:25"
+        },
+        {
+          "role": "user",
+          "content": "1",
+          "timestamp": "2025-04-19 16:04:26"
+        },
+        {
+          "role": "assistant",
+          "content": "Fantastic, thanks for your responses! 🎉\n\n****",
+          "timestamp": "2025-04-19 16:04:27"
+        }
+      ],
+      "completed_at": "2025-04-19 16:04:27"
+    }
+  }
+}

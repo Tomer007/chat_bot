@@ -3,55 +3,11 @@
 {% block styles %}
 {% include "partials/theme_styles.html" %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
-<style>
-    header {
-      display: flex;
-      align-items: center;
-      position: relative;
-      padding: 1rem;
-      background-color: #007bff;
-      color: white;
-    }
-
-    .hamburger-menu {
-      position: absolute;
-      left: -1rem;
-    }
-
-    header h1 {
-      flex: 1;
-      text-align: center;
-      margin: 0;
-    }
-
-    .hamburger-menu button {
-      background-color: #007bff;
-      border: none;
-      padding: 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .hamburger-menu button:hover {
-      background-color: #0056b3;
-    }
-
-    /* Style for welcome message to display line breaks properly */
-    .welcome-message {
-      white-space: pre-line;
-      line-height: 1.5;
-    }
-
-
-
-
-</style>
 {% endblock %}
 
 {% block content %}
 <div class="chat-container" id="app">
-    <header>
+    <header style="background-color: #007bff; color: white;">
         <div class="header-container">
             <button id="hamburgerIcon" class="hamburger-icon" aria-label="Menu">
                 <span class="hamburger-box">
@@ -97,15 +53,16 @@
         <div class="chat-input">
             <div class="input-wrapper">
                 <div class="input-group">
-            <textarea
-                    id="userInput"
-                    placeholder="הקלד הודעה כאן..."
-                    rows="1"
-                    maxlength="1000"
-                    aria-label="הודעה"
-                    dir="rtl"
-                    style="text-align: right; height: 25px; line-height: 10px; padding-right: 150px;"
-            ></textarea>
+                    <textarea
+                            id="userInput"
+                            placeholder="הקלד הודעה כאן..."
+                            rows="1"
+                            maxlength="1000"
+                            aria-label="הודעה"
+                            dir="rtl"
+                            style="padding-right: 150px;"
+                    ></textarea>
+
                     <!-- Font Awesome (once in base layout or head) -->
                     <link rel="stylesheet"
                           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -121,13 +78,11 @@
                             <i class="fas fa-paper-plane"></i>
                         </button>
 
-                        <button id="uploadButton" type="button" class="upload-button" title="צרף קובץ" aria-label="צרף קובץ">
+                        <button id="uploadButton" type="button" class="upload-button" title="צרף קובץ"
+                                aria-label="צרף קובץ">
                             <i class="fas fa-paperclip"></i>
                         </button>
                         <input type="file" id="fileInput" style="display: none;">
-
-                        <!-- Upload Button -->
-
                     </div>
 
                     <div class="input-footer">
@@ -135,6 +90,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     </main>
     <footer class="footer">
         <a href="mailto:{{ chatbot_config.contact_email }}" aria-label="צור קשר">{{ chatbot_config.contact_email }}</a>
@@ -149,5 +105,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="module">
     import { ChatUI } from "{{ url_for('static', filename='js/chat.js') }}";
+
 </script>
 {% endblock %}

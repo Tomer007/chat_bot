@@ -1,27 +1,27 @@
 <nav class="hamburger-menu">
-  <button class="hamburger-icon" aria-label="תפריט" id="hamburgerButton">☰</button>
-  <div class="menu-content" id="menuContent">
-    <button class="menu-item" data-action="help">
-      <span class="menu-icon">❓</span>
-      <span class="menu-text">עזרה והנחיות</span>
-    </button>
-    <button class="menu-item" data-action="download">
-      <span class="menu-icon">💾</span>
-      <span class="menu-text">להוריד תמלול</span>
-    </button>
-    <button class="menu-item" data-action="about">
-      <span class="menu-icon">ℹ️</span>
-      <span class="menu-text">אודות</span>
-    </button>
-    <button class="menu-item" id="toggleModeBtn" data-action="theme">
-      <span class="menu-icon theme-icon">🌙</span>
-      <span class="menu-text theme-text">מצב לילה</span>
-    </button>
-    <button class="menu-item" data-action="logout">
-      <span class="menu-icon">🚪</span>
-      <span class="menu-text">התנתק מהמערכת</span>
-    </button>
-  </div>
+    <button class="hamburger-icon" aria-label="תפריט" id="hamburgerButton">☰</button>
+    <div class="menu-content" id="menuContent">
+        <button class="menu-item" data-action="help">
+            <span class="menu-icon">❓</span>
+            <span class="menu-text">עזרה והנחיות</span>
+        </button>
+        <button class="menu-item" data-action="download">
+            <span class="menu-icon">💾</span>
+            <span class="menu-text">להוריד תמלול</span>
+        </button>
+        <button class="menu-item" data-action="about">
+            <span class="menu-icon">ℹ️</span>
+            <span class="menu-text">אודות</span>
+        </button>
+        <button class="menu-item" id="toggleModeBtn" data-action="theme">
+            <span class="menu-icon theme-icon">🌙</span>
+            <span class="menu-text theme-text">מצב לילה</span>
+        </button>
+        <button class="menu-item" data-action="logout">
+            <span class="menu-icon">🚪</span>
+            <span class="menu-text">התנתק מהמערכת</span>
+        </button>
+    </div>
 </nav>
 
 <style>
@@ -112,6 +112,7 @@
   body.menu-open {
     overflow: hidden;
   }
+
 </style>
 
 <script>
@@ -169,4 +170,5 @@
       e.stopPropagation();
     });
   });
-</script> 
+
+</script>
